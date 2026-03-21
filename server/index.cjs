@@ -38,8 +38,10 @@ const DEEPSEEK_API_URL = 'https://api.deepseek.com/chat/completions';
 app.use(express.json());
 
 // CORS: permitir solicitudes desde el servidor de desarrollo de Vite
+const ALLOWED_ORIGIN = process.env.FRONTEND_ORIGIN ?? 'http://localhost:5173';
+
 app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173');
+  res.setHeader('Access-Control-Allow-Origin', ALLOWED_ORIGIN);
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
@@ -163,9 +165,13 @@ app.post('/api/analyze', async (req, res) => {
 });
 
 // ---------------------------------------------------------------------------
-// Iniciar servidor
+// Iniciar servidor (solo cuando se ejecuta directamente, no cuando Lambda lo importa)
 // ---------------------------------------------------------------------------
-app.listen(PORT, () => {
-  console.log(`[Perfilador] Servidor proxy escuchando en http://localhost:${PORT}`);
-  console.log(`[Perfilador] Proxy de Vite: /api → http://localhost:${PORT}`);
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`[Perfilador] Servidor proxy escuchando en http://localhost:${PORT}`);
+    console.log(`[Perfilador] Proxy de Vite: /api → http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;

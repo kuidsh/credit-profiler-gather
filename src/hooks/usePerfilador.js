@@ -20,8 +20,10 @@ import { useWizard }   from '../context/WizardContext';
 import { buildPrompt } from '../utils/promptBuilder';
 import { parseResponse } from '../utils/responseParser';
 
-// Endpoint del servidor proxy local (Vite lo reenvía a localhost:3001)
-const API_URL = '/api/analyze';
+// Endpoint del servidor proxy.
+// En desarrollo Vite reenvía /api → localhost:3001.
+// En producción (Lambda) se usa VITE_API_URL (URL del API Gateway).
+const API_URL = `${import.meta.env.VITE_API_URL ?? ''}/api/analyze`;
 
 // Timeout en el frontend: ligeramente mayor que el timeout del servidor (25 s)
 // para que el servidor pueda responder con su propio mensaje de error antes

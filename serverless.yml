@@ -1,0 +1,29 @@
+service: perfilador-express
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: us-east-1
+  environment:
+    DEEPSEEK_API_KEY: ${ssm:/perfilador/DEEPSEEK_API_KEY}
+    FRONTEND_ORIGIN: ${env:FRONTEND_ORIGIN, "https://main.d2t2etx0403nnk.amplifyapp.com/"}
+
+functions:
+  api:
+    handler: server/lambda.handler
+    timeout: 30
+    events:
+      - httpApi:
+          path: /api/{proxy+}
+          method: ANY
+
+package:
+  patterns:
+    - '!node_modules/.cache/**'
+    - '!src/**'
+    - '!dist/**'
+    - '!docs/**'
+    - '!public/**'
+    - '!.env*'
+    - '!.claude/**'
+    - '!*.md'
