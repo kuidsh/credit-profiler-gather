@@ -78,6 +78,23 @@ The brand palette was changed from blue (#3b82f6) to crimson red (#e0252d) as of
 - All `blue-*` Tailwind classes replaced with `brand-*` across all component files in scope.
 - Alert.jsx still has blue info variant — intentionally untouched (not in scope).
 
+## AWS deployment layer (added 2026-03-20)
+
+The app is configured for AWS Amplify + API Gateway + Lambda deployment:
+
+- lambda/index.mjs — ES Module Lambda handler (Node 18.x/20.x), reads DEEPSEEK_API_KEY from Lambda env vars, Lambda Proxy Integration format, 25 s timeout on DeepSeek fetch, full CORS headers on every response including errors and OPTIONS preflight
+- lambda/README.md — Spanish step-by-step deployment instructions (zip, Lambda create, env var, API Gateway route, CORS, deploy, curl test)
+- amplify.yml — Amplify build spec: preBuild npm install, build npm run build, artifacts from dist/
+- src/hooks/usePerfilador.js — API_URL now uses dual-mode pattern: (import.meta.env.VITE_API_URL || '') + '/api/analyze'. Locally, VITE_API_URL is undefined so Vite proxy handles /api. In production, set VITE_API_URL to the API Gateway base URL in Amplify environment variables.
+
+Deployment checklist:
+1. zip lambda/index.mjs → upload to Lambda console
+2. Set DEEPSEEK_API_KEY in Lambda env vars
+3. Set Lambda timeout to 30 s
+4. Configure API Gateway: POST + OPTIONS /api/analyze → Lambda (Proxy Integration)
+5. Set VITE_API_URL in Amplify env vars (base URL without /api/analyze suffix)
+6. Redeploy Amplify app
+
 ## Known open item
 
 Step3 uses `import { usePerfilador } from '../hooks/usePerfilador'` (without .js extension). Vite resolves this correctly. No action needed.

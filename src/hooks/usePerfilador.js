@@ -20,10 +20,16 @@ import { useWizard }   from '../context/WizardContext';
 import { buildPrompt } from '../utils/promptBuilder';
 import { parseResponse } from '../utils/responseParser';
 
-// Endpoint del servidor proxy.
-// En desarrollo Vite reenvía /api → localhost:3001.
-// En producción (Lambda) se usa VITE_API_URL (URL del API Gateway).
-const API_URL = `${import.meta.env.VITE_API_URL ?? ''}/api/analyze`;
+// Endpoint del servidor de análisis.
+//
+// Modo dual:
+//   - Desarrollo local: VITE_API_URL no está definida, así que se usa '/api/analyze'.
+//     Vite reenvía /api → localhost:3001 (servidor proxy Express en server/index.cjs).
+//   - Producción (AWS Amplify + Lambda): configura la variable de entorno
+//     VITE_API_URL=https://[api-gateway-id].execute-api.[region].amazonaws.com/[stage]
+//     en las variables de entorno de la app de Amplify. El frontend concatena
+//     '/api/analyze' al final para formar la URL completa del endpoint de Lambda.
+const API_URL = (import.meta.env.VITE_API_URL || '') + '/api/analyze';
 
 // Timeout en el frontend: ligeramente mayor que el timeout del servidor (25 s)
 // para que el servidor pueda responder con su propio mensaje de error antes
