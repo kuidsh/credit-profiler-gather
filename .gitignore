@@ -9,9 +9,17 @@ node_modules/
 # Vite build output
 dist/
 
+# Serverless Framework deployment artifacts
+.serverless/
+
 # Logs
 *.log
 npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Vite cache
+.vite/
 
 # Editor
 .vscode/
@@ -19,7 +27,19 @@ npm-debug.log*
 *.ntvs*
 *.njsproj
 *.sln
+*.swp
+*.swo
 
 # OS
 .DS_Store
 Thumbs.db
+desktop.ini
+
+# AWS / Amplify
+amplify/
+#amplify-backup/
+aws-exports.js
+awsconfiguration.json
+
+# Coverage / testing
+coverage/
