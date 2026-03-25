@@ -1,5 +1,8 @@
 # Perfilador Express de Orientación Comercial para Crédito Automotriz
 
+#despliegue en prod:
+https://main.d2t2etx0403nnk.amplifyapp.com/paso-1
+
 Herramienta interna para asesores de piso en agencias y lotes de autos en México. Permite perfilar rápidamente a un cliente para orientar la gestión comercial de un crédito automotriz. **No aprueba créditos — es una guía comercial.**
 
 ## Stack
