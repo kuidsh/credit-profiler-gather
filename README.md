@@ -7,6 +7,7 @@ Herramienta interna para asesores de piso en agencias y lotes de autos en Méxic
 - **Frontend**: React 19 + Vite 6 + Tailwind CSS 3
 - **Routing**: React Router v7
 - **Backend/Proxy**: Express (`server/index.cjs`)
+- **ORM**: Prisma (PostgreSQL en prod, SQLite opcional en dev)
 - **Deploy**: AWS Amplify + Lambda (`server/lambda.cjs`) via `serverless-http`
 
 ## Desarrollo local
@@ -16,7 +17,7 @@ Herramienta interna para asesores de piso en agencias y lotes de autos en Méxic
 npm install
 
 # Copiar variables de entorno
-cp .env.example .env   # Agrega tu API key al .env
+cp .env.example .env   # Agrega tu API key y DATABASE_URL al .env
 
 # Iniciar frontend + proxy en paralelo
 npm run dev:full
@@ -33,12 +34,31 @@ La variable `VITE_API_URL` no se necesita en desarrollo — Vite redirige `/api`
 | Variable | Descripción |
 |----------|-------------|
 | `LLM_API_KEY` | API key del proveedor LLM (usada solo en el servidor) |
+| `DATABASE_URL` | Cadena de conexión a la base de datos (PostgreSQL o SQLite) |
 | `VITE_API_URL` | URL base del API Gateway en producción (ej. `https://xxx.execute-api.us-east-1.amazonaws.com/prod`) |
+
+### DATABASE_URL según entorno
+
+```bash
+# SQLite (dev local sin Docker)
+DATABASE_URL="file:./prisma/dev.db"
+
+# PostgreSQL local con Docker
+DATABASE_URL="postgresql://postgres:password@localhost:5432/perfilador_dev"
+
+# Aurora Serverless v2 (producción)
+DATABASE_URL="postgresql://user:pass@cluster.us-east-1.rds.amazonaws.com:5432/perfilador_prod"
+```
 
 ## Flujo de la aplicación
 
 ```
-Wizard (4 pasos) → promptBuilder → Proxy /api/analyze → LLM → responseParser → ResultadoExpress
+Wizard (5 pasos) → promptBuilder → Proxy /api/analyze → LLM → responseParser → ResultadoExpress
+                                                                                       ↓ (si Banco o Financiera)
+                                                                               Step5 mini-wizard (3 sub-pasos)
+                                                                                       ↓
+                                                                        POST /api/guardar-contacto (sub-paso 1)
+                                                                        PUT  /api/guardar-perfil/:sesionId (sub-paso 3)
 ```
 
 ### Pasos del wizard
@@ -48,7 +68,36 @@ Wizard (4 pasos) → promptBuilder → Proxy /api/analyze → LLM → responsePa
 | 1 — Datos del cliente | `Step1Cliente.jsx` | Ocupación, antigüedad, ingreso, comprobación, tipo de domicilio |
 | 2 — Perfil financiero | `Step2PerfilFinanciero.jsx` | Historial (referencial), deudas, renta/hipoteca, dependientes |
 | 3 — Auto y operación | `Step3AutoOperacion.jsx` | Precio, año, tipo, enganche (≥20%), mensualidad deseada, plazo |
-| 4 — Resultado | `Step4ResultadoExpress.jsx` | Resultado del análisis de Claude |
+| 4 — Resultado | `Step4ResultadoExpress.jsx` | Resultado del análisis del LLM |
+| 5 — Datos personales | `Step5DatosPersonales.jsx` | Mini-wizard 3 sub-pasos: Contacto → Identificación → Domicilio |
+
+> **Paso 5** solo aparece cuando `clasificacionRecomendada` es **Banco** o **Financiera**.
+
+### Step 5 — Mini-wizard de datos personales
+
+| Sub-paso | Campos | Guardado |
+|----------|--------|---------|
+| 1 — Contacto | Nombres, apellidos, teléfono celular | Inmediato al avanzar (`POST /api/guardar-contacto`) |
+| 2 — Identificación | Fecha nacimiento, RFC, CURP, género, estado civil, email | Al avanzar al sub-paso 3 |
+| 3 — Domicilio | Calle, colonia, municipio, estado, CP, tipo domicilio, tiempo | Al guardar completo (`PUT /api/guardar-perfil/:sesionId`) |
+
+## Clientes históricos
+
+Disponible en `/clientes`. Accesible desde Step 1 y desde el sub-paso 1 del Step 5 mediante el enlace "¿Ya tienes datos de este cliente? Buscar cliente existente →".
+
+- **Búsqueda por teléfono**: `GET /api/clientes?telefono=XXXXXXXXXX`
+- **10 más recientes**: `GET /api/clientes/recientes`
+- Al seleccionar un cliente, pre-llena los campos del sub-paso 1 automáticamente
+
+## Estrategia de persistencia
+
+```
+clasificacionRecomendada = Banco | Financiera  →  guardarCompleto = true
+                                                   Persiste: sesion + perfil completo + datos personales
+
+clasificacionRecomendada = Subprime            →  guardarCompleto = false
+                                                   Persiste: solo interacción anonimizada (sin PII ni datos financieros exactos)
+```
 
 ## Clasificación de canal
 
@@ -95,37 +144,59 @@ src/
 ├── components/
 │   ├── layout/WizardLayout.jsx   # Header, footer, barra de progreso
 │   └── ui/                       # Button, Card, Select, InputNumber, Alert, ...
-├── context/WizardContext.jsx      # Estado global de las 16 variables + navegación
-├── hooks/usePerfilador.js         # Llamada al proxy, timeout, manejo de errores
+├── context/WizardContext.jsx      # Estado global: 16 variables + datosPersonales + navegación
+├── hooks/
+│   ├── usePerfilador.js           # Llamada al proxy LLM, timeout, manejo de errores
+│   └── useGuardarPerfil.js        # POST/PUT para persistir datos personales (TODO: implementar)
+├── pages/
+│   └── ClientesHistoricos.jsx     # Búsqueda y listado de clientes históricos
 ├── steps/
 │   ├── Step1Cliente.jsx
 │   ├── Step2PerfilFinanciero.jsx
 │   ├── Step3AutoOperacion.jsx
-│   └── Step4ResultadoExpress.jsx
+│   ├── Step4ResultadoExpress.jsx
+│   └── Step5DatosPersonales.jsx   # Mini-wizard 3 sub-pasos (Contacto / Identificación / Domicilio)
 └── utils/
     ├── promptBuilder.js           # Construye systemPrompt + userMessage
     └── responseParser.js          # Parsea respuesta del LLM a objeto JS
 
 server/
-├── index.cjs                      # Express proxy (dev y producción no-Lambda)
-└── lambda.cjs                     # Handler para AWS Lambda
+├── index.cjs                      # Express proxy + endpoints API
+├── lambda.cjs                     # Handler para AWS Lambda
+└── db/                            # (TODO) Capa de datos Prisma
+    ├── client.cjs                 # Singleton PrismaClient
+    ├── guardarPerfil.cjs          # Transacción principal de persistencia
+    ├── calcularCarga.cjs          # Función pura: % carga financiera
+    └── anonimizar.cjs             # Rangos para interacciones_anonimas
 
-public/
-├── LogoGANAcorp.jpeg
-└── logo_seminuevos_rojo.png
+prisma/
+├── schema.prisma                  # Schema Prisma (4 modelos)
+└── migrations/                    # Generado por `prisma migrate dev`
 
 docs/
 ├── 01-funcional.md                # Especificación funcional completa
 ├── 02-tecnico.md                  # Arquitectura y tipos de variables
 ├── 03-prompts-claude.md           # Prompt template original
-└── upgrade_1/
-    ├── upgrades_1.md              # Requerimientos upgrade 1 (aplicado 2026-03-24)
-    └── Politicas_entidades.pdf    # Políticas de referencia de entidades financieras
+├── upgrade_1/
+│   ├── upgrades_1.md              # Requerimientos upgrade 1 (aplicado 2026-03-24)
+│   └── Politicas_entidades.pdf    # Políticas de referencia de entidades financieras
+└── upgrade_2/
+    └── db_design.md               # Diseño de datos upgrade 2 (aplicado 2026-03-25)
 ```
+
+## Base de datos — Modelos Prisma
+
+| Modelo | Tabla | Descripción |
+|--------|-------|-------------|
+| `SesionWizard` | `sesiones_wizard` | Raíz de cada ejecución del wizard |
+| `PerfilCompleto` | `perfiles_completos` | Datos completos (solo Banco/Financiera) |
+| `DatosPersonalesPaso5` | `datos_personales_paso5` | PII del Step 5 con guardado progresivo |
+| `InteraccionAnonima` | `interacciones_anonimas` | Solo metadatos categóricos (Subprime) |
 
 ## Reglas de negocio importantes
 
 - El bloque **"Qué decirle al cliente"** tiene color dinámico: verde (Alta), amarillo (Media), rojo (Baja).
 - El **enganche mínimo** validado en Step 3 es el 20% del precio del auto.
-- El **historial crediticio** es dato referencial — el cliente puede no conocer su situación real. No es el factor decisivo único.
+- El **historial crediticio** es dato referencial — no es el factor decisivo único.
 - Nunca se mencionan bancos, financieras ni SOFOM específicas en el output.
+- Los datos del **Step 5 están sujetos a la LFPDPPP** — incluir aviso de privacidad antes del formulario.

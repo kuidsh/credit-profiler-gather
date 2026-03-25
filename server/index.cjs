@@ -165,6 +165,103 @@ app.post('/api/analyze', async (req, res) => {
 });
 
 // ---------------------------------------------------------------------------
+// GET /api/clientes/recientes
+// Devuelve los 10 registros más recientes de datos_personales_paso5
+// (solo registros con nombres y telefonoCelular no nulos), con join a
+// perfiles_completos para incluir clasificacionRecomendada.
+// Response: { ok: true, clientes: [...] }
+// ---------------------------------------------------------------------------
+
+// TODO: import { prisma } from './db/client.cjs'
+
+app.get('/api/clientes/recientes', async (req, res) => {
+  const timestamp = new Date().toISOString();
+  console.log(`[${timestamp}] GET /api/clientes/recientes`);
+
+  try {
+    const rows = await prisma.datosPersonalesPaso5.findMany({
+      where: {
+        nombres: { not: null },
+        telefonoCelular: { not: null },
+      },
+      orderBy: { creadoEn: 'desc' },
+      take: 10,
+      select: {
+        id: true,
+        nombres: true,
+        apellidoPaterno: true,
+        apellidoMaterno: true,
+        telefonoCelular: true,
+        creadoEn: true,
+        perfil: { select: { clasificacionRecomendada: true } },
+      },
+    });
+
+    const clientes = rows.map((r) => ({
+      id: r.id,
+      nombres: r.nombres,
+      apellidoPaterno: r.apellidoPaterno,
+      apellidoMaterno: r.apellidoMaterno,
+      telefonoCelular: r.telefonoCelular,
+      clasificacionRecomendada: r.perfil?.clasificacionRecomendada ?? null,
+      creadoEn: r.creadoEn,
+    }));
+
+    return res.json({ ok: true, clientes });
+  } catch (err) {
+    console.error(`[${timestamp}] Error en /api/clientes/recientes:`, err);
+    return res.status(500).json({ ok: false, error: 'server_error' });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// GET /api/clientes?telefono=XXXXXXXXXX
+// Busca registros en datos_personales_paso5 por telefonoCelular exacto.
+// Devuelve array de 0 o más coincidencias, ordenadas por creadoEn DESC.
+// Response: { ok: true, clientes: [...] }
+// ---------------------------------------------------------------------------
+app.get('/api/clientes', async (req, res) => {
+  const timestamp = new Date().toISOString();
+  const telefono = req.query.telefono;
+  console.log(`[${timestamp}] GET /api/clientes?telefono=${telefono ?? '(vacío)'}`);
+
+  if (!telefono) {
+    return res.status(400).json({ ok: false, error: 'Se requiere el parámetro telefono.' });
+  }
+
+  try {
+    const rows = await prisma.datosPersonalesPaso5.findMany({
+      where: { telefonoCelular: telefono },
+      orderBy: { creadoEn: 'desc' },
+      select: {
+        id: true,
+        nombres: true,
+        apellidoPaterno: true,
+        apellidoMaterno: true,
+        telefonoCelular: true,
+        creadoEn: true,
+        perfil: { select: { clasificacionRecomendada: true } },
+      },
+    });
+
+    const clientes = rows.map((r) => ({
+      id: r.id,
+      nombres: r.nombres,
+      apellidoPaterno: r.apellidoPaterno,
+      apellidoMaterno: r.apellidoMaterno,
+      telefonoCelular: r.telefonoCelular,
+      clasificacionRecomendada: r.perfil?.clasificacionRecomendada ?? null,
+      creadoEn: r.creadoEn,
+    }));
+
+    return res.json({ ok: true, clientes });
+  } catch (err) {
+    console.error(`[${timestamp}] Error en /api/clientes:`, err);
+    return res.status(500).json({ ok: false, error: 'server_error' });
+  }
+});
+
+// ---------------------------------------------------------------------------
 // Iniciar servidor (solo cuando se ejecuta directamente, no cuando Lambda lo importa)
 // ---------------------------------------------------------------------------
 if (require.main === module) {

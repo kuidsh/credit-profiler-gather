@@ -117,6 +117,14 @@ export default function Step1Cliente() {
           Información básica de ocupación e ingresos. Los campos con{' '}
           <span className="text-red-500 font-medium">*</span> son obligatorios.
         </p>
+        {/* Enlace discreto para buscar cliente existente */}
+        <button
+          type="button"
+          onClick={() => navigate('/clientes')}
+          className="mt-2 text-sm text-brand-600 underline hover:text-brand-700 cursor-pointer text-left"
+        >
+          ¿Ya tienes datos de este cliente? Buscar cliente existente →
+        </button>
       </div>
 
       {/* Campos del formulario */}

@@ -20,6 +20,10 @@ npm-debug.log*
 *.njsproj
 *.sln
 
+# Prisma
+prisma/dev.db
+prisma/dev.db-journal
+
 # OS
 .DS_Store
 Thumbs.db

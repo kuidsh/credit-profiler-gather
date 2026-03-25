@@ -36,6 +36,9 @@ const initialState = {
   resultado: null,          // objeto parseado de la respuesta de Claude
   isLoading: false,
   error: null,
+
+  // Paso 5 — Datos personales del cliente (solo cuando clasificacion = Banco | Financiera)
+  datosPersonales: null,    // objeto con los campos de Step5DatosPersonales
 }
 
 // Campos que corresponden a las 13 variables normalizadas del wizard
@@ -60,13 +63,17 @@ function wizardReducer(state, action) {
     case 'GO_TO_STEP':
       return { ...state, currentStep: action.payload }
 
-    // Avanza al siguiente paso
+    // Avanza al siguiente paso (hasta paso 5 ahora que existe Step5)
     case 'NEXT_STEP':
-      return { ...state, currentStep: Math.min(state.currentStep + 1, 4) }
+      return { ...state, currentStep: Math.min(state.currentStep + 1, 5) }
 
     // Retrocede al paso anterior
     case 'PREV_STEP':
       return { ...state, currentStep: Math.max(state.currentStep - 1, 1) }
+
+    // Guarda los datos personales del cliente (Step5)
+    case 'SET_DATOS_PERSONALES':
+      return { ...state, datosPersonales: action.payload }
 
     // Activa el estado de carga
     case 'SET_LOADING':
@@ -171,6 +178,11 @@ export function WizardProvider({ children }) {
     dispatch({ type: 'SET_LOADING', payload: true })
   }, [])
 
+  // Guarda el objeto de datos personales capturado en Step5
+  const setDatosPersonales = useCallback((datos) => {
+    dispatch({ type: 'SET_DATOS_PERSONALES', payload: datos })
+  }, [])
+
   // wizardData: objeto plano con las 13 variables normalizadas
   // (lo que usan Step3 y usePerfilador para leer datos)
   const wizardData = Object.fromEntries(
@@ -203,6 +215,10 @@ export function WizardProvider({ children }) {
 
     // ── Alias adicional (Step2 local) ──
     startLoading,
+
+    // ── Step5 ──
+    datosPersonales: state.datosPersonales,
+    setDatosPersonales,
   }
 
   return (

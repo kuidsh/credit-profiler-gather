@@ -95,6 +95,19 @@ Deployment checklist:
 5. Set VITE_API_URL in Amplify env vars (base URL without /api/analyze suffix)
 6. Redeploy Amplify app
 
+## Step 5 — Datos Personales (added 2026-03-25)
+
+- src/steps/Step5DatosPersonales.jsx — recopilacion de datos personales. Accessible only when clasificacionRecomendada is "Banco" or "Financiera".
+- Route: /paso-5 (lazy-loaded)
+- Navigation: Step4 CTA button calls goToStep(5); Step5 back button calls goToStep(4)
+- Context additions: datosPersonales: null in initialState, SET_DATOS_PERSONALES action, setDatosPersonales() callback, datosPersonales exposed in context value
+- NEXT_STEP cap raised from 4 to 5
+- ROUTE_TO_STEP and STEP_TO_ROUTE maps extended with /paso-5 ↔ 5
+- WizardLayout progress bar still hidden at step >= 4 (comment updated only, logic unchanged)
+- CTA button in Step4 is green (bg-green-600) to distinguish from brand-600 primary action
+- On submit: shows in-page success confirmation, no further navigation (API save is a future increment)
+- Step5 field tipoDomicilioStep5 uses a distinct key to avoid colliding with Step1's tipoDomicilio in context
+
 ## Known open item
 
 Step3 uses `import { usePerfilador } from '../hooks/usePerfilador'` (without .js extension). Vite resolves this correctly. No action needed.
