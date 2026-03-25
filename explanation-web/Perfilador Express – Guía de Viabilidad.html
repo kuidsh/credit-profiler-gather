@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<!-- saved from url=(0035)https://eager-poplar-53xc.here.now/ -->
+<html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perfilador Express – Guía de Viabilidad</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f4f8;
+      color: #1a202c;
+      padding: 24px 16px;
+    }
+    .container { max-width: 860px; margin: 0 auto; }
+
+    header {
+      background: linear-gradient(135deg, #1a56db 0%, #0e3fa5 100%);
+      color: white;
+      border-radius: 16px;
+      padding: 32px 28px 24px;
+      margin-bottom: 28px;
+    }
+    header h1 { font-size: 1.6rem; font-weight: 700; margin-bottom: 6px; }
+    header p { font-size: 0.95rem; opacity: 0.85; }
+
+    .badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 999px;
+      margin-right: 6px;
+    }
+    .badge-blue  { background:#dbeafe; color:#1e40af; }
+    .badge-gray  { background:#e5e7eb; color:#374151; }
+
+    /* SECTION TITLES */
+    .section-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #1a56db;
+      margin: 28px 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-title::before {
+      content: '';
+      display: inline-block;
+      width: 4px; height: 20px;
+      background: #1a56db;
+      border-radius: 4px;
+    }
+
+    /* STEP CARDS */
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      margin-bottom: 4px;
+    }
+    .step-card {
+      background: white;
+      border-radius: 12px;
+      padding: 18px 16px;
+      border-top: 4px solid #1a56db;
+      box-shadow: 0 1px 4px rgba(0,0,0,.07);
+    }
+    .step-card .step-num {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #1a56db;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      margin-bottom: 6px;
+    }
+    .step-card h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 10px; }
+    .step-card ul { list-style: none; }
+    .step-card ul li {
+      font-size: 0.85rem;
+      color: #374151;
+      padding: 4px 0;
+      border-bottom: 1px solid #f3f4f6;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .step-card ul li:last-child { border-bottom: none; }
+    .step-card ul li::before { content: '›'; color: #1a56db; font-weight: 700; }
+
+    /* PRIORITY TABLE */
+    .priority-table {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,.07);
+      margin-bottom: 4px;
+    }
+    .priority-table table { width: 100%; border-collapse: collapse; }
+    .priority-table thead { background: #1a56db; color: white; }
+    .priority-table thead th {
+      padding: 12px 16px;
+      font-size: 0.82rem;
+      text-align: left;
+      font-weight: 600;
+    }
+    .priority-table tbody tr { border-bottom: 1px solid #f3f4f6; }
+    .priority-table tbody tr:last-child { border-bottom: none; }
+    .priority-table tbody tr:hover { background: #f9fafb; }
+    .priority-table tbody td {
+      padding: 10px 16px;
+      font-size: 0.84rem;
+      vertical-align: top;
+    }
+    .priority-table tbody td:first-child {
+      width: 36px;
+      font-weight: 800;
+      color: #1a56db;
+      font-size: 1rem;
+      text-align: center;
+    }
+    .priority-table tbody td:nth-child(2) { font-weight: 600; }
+
+    /* FORMULA */
+    .formula-box {
+      background: #eff6ff;
+      border: 1.5px solid #bfdbfe;
+      border-radius: 12px;
+      padding: 20px 20px;
+      margin-bottom: 4px;
+    }
+    .formula-box .formula-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #1e40af;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      margin-bottom: 10px;
+    }
+    .formula-text {
+      font-family: 'Courier New', monospace;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #1e40af;
+      background: white;
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      border: 1px solid #bfdbfe;
+    }
+    .semaforo { display: flex; gap: 10px; flex-wrap: wrap; }
+    .sem-item {
+      flex: 1;
+      min-width: 140px;
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 0.84rem;
+    }
+    .sem-item .sem-label { font-weight: 700; font-size: 0.9rem; margin-bottom: 4px; }
+    .sem-item .sem-range { font-size: 0.78rem; opacity: .85; }
+    .sem-verde  { background: #d1fae5; color: #065f46; }
+    .sem-ambar  { background: #fef9c3; color: #78350f; }
+    .sem-rojo   { background: #fee2e2; color: #991b1b; }
+
+    /* VIABILITY CARDS */
+    .viability-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 14px;
+    }
+    .viab-card {
+      border-radius: 12px;
+      padding: 18px 16px;
+      box-shadow: 0 1px 4px rgba(0,0,0,.07);
+    }
+    .viab-card .viab-label {
+      font-size: 1.1rem;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+    .viab-card .viab-profile {
+      font-size: 0.76rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      margin-bottom: 10px;
+      opacity: .7;
+    }
+    .viab-card p { font-size: 0.84rem; line-height: 1.55; }
+    .viab-alta   { background:#d1fae5; color:#065f46; border-left: 5px solid #10b981; }
+    .viab-media  { background:#fef9c3; color:#78350f; border-left: 5px solid #f59e0b; }
+    .viab-baja   { background:#fee2e2; color:#991b1b; border-left: 5px solid #ef4444; }
+
+    /* RULES */
+    .rules-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 14px;
+    }
+    .rule-card {
+      background: white;
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 1px 4px rgba(0,0,0,.07);
+    }
+    .rule-card h4 {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #1a56db;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .rule-card ul { list-style: none; }
+    .rule-card ul li {
+      font-size: 0.82rem;
+      color: #374151;
+      padding: 4px 0;
+      display: flex;
+      gap: 6px;
+    }
+    .rule-card ul li span.dot {
+      flex-shrink: 0;
+      width: 6px; height: 6px;
+      background: #1a56db;
+      border-radius: 50%;
+      margin-top: 6px;
+    }
+
+    /* OUTPUT */
+    .output-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 14px;
+    }
+    .output-card {
+      background: white;
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 1px 4px rgba(0,0,0,.07);
+      border-left: 4px solid #1a56db;
+    }
+    .output-card .out-field {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #1a56db;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      margin-bottom: 6px;
+    }
+    .output-card .out-values {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .pill {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: #eff6ff;
+      color: #1e40af;
+      border: 1px solid #bfdbfe;
+    }
+    .pill-green  { background:#d1fae5; color:#065f46; border-color:#6ee7b7; }
+    .pill-yellow { background:#fef9c3; color:#78350f; border-color:#fde68a; }
+    .pill-red    { background:#fee2e2; color:#991b1b; border-color:#fca5a5; }
+
+    footer {
+      text-align: center;
+      font-size: 0.78rem;
+      color: #6b7280;
+      margin-top: 36px;
+      padding-top: 16px;
+      border-top: 1px solid #e5e7eb;
+    }
+  </style>
+<script src="chrome-extension://mkdjegdakgimmckobdnfiimhgmabbido/log-layers.js" type="text/javascript" id="simple-data-layer-viewer-console" data-names="[&quot;dataLayer&quot;,&quot;digitalData&quot;,&quot;adobeDataLayer&quot;,&quot;digitalDataLayer&quot;,&quot;utag_data&quot;,&quot;tc_vars&quot;,&quot;udo&quot;]" data-interval="250" data-collapsed="true"></script></head>
+<body>
+<div class="container">
+
+  <header>
+    <h1>Perfilador Express · Guía de Viabilidad</h1>
+    <p>Puntos clave que el wizard evalúa para determinar si un perfil es viable o no viable</p>
+  </header>
+
+  <!-- PASOS DEL WIZARD -->
+  <div class="section-title">Los 4 pasos del wizard y sus variables</div>
+  <div class="steps-grid">
+    <div class="step-card">
+      <div class="step-num">Paso 1</div>
+      <h3>Cliente</h3>
+      <ul>
+        <li>Tipo de ocupación</li>
+        <li>Antigüedad laboral</li>
+        <li>Ingreso mensual</li>
+        <li>¿Comprueba ingresos?</li>
+      </ul>
+    </div>
+    <div class="step-card">
+      <div class="step-num">Paso 2</div>
+      <h3>Perfil financiero</h3>
+      <ul>
+        <li>Historial crediticio percibido</li>
+        <li>Deudas mensuales</li>
+        <li>Enganche disponible</li>
+      </ul>
+    </div>
+    <div class="step-card">
+      <div class="step-num">Paso 3</div>
+      <h3>Auto y operación</h3>
+      <ul>
+        <li>Precio del auto</li>
+        <li>Año modelo</li>
+        <li>Tipo de unidad</li>
+        <li>Mensualidad buscada</li>
+        <li>Plazo deseado</li>
+        <li>¿Acepta ajustar?</li>
+      </ul>
+    </div>
+    <div class="step-card" style="border-top-color:#10b981;">
+      <div class="step-num" style="color:#10b981;">Paso 4</div>
+      <h3>Resultado express</h3>
+      <ul>
+        <li>Viabilidad inicial</li>
+        <li>Tipo de perfil</li>
+        <li>Capacidad de pago</li>
+        <li>Carga financiera</li>
+        <li>Ruta sugerida</li>
+        <li>Script para el vendedor</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- PRIORIDAD DE DECISIÓN -->
+  <div class="section-title">Prioridad de decisión (peso descendente)</div>
+  <div class="priority-table">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Variable</th>
+          <th>¿Por qué importa?</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Historial crediticio + comprobación de ingresos</td>
+          <td>Mayor peso de todos. Historial bueno + comprobación sólida → ruta tradicional. Malo o sin comprobación → alternativa o reestructura.</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Ocupación + antigüedad laboral</td>
+          <td>Asalariado o pensionado abren ruta tradicional. Independiente/negocio propio dependen de comprobación. Informal tiende a alternativa.</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Relación de carga financiera (%)</td>
+          <td>Si el % supera 40% la operación se vuelve apretada. Si supera mucho ese umbral, se sugiere reestructurar antes de ingresar.</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Enganche disponible</td>
+          <td>A mayor enganche, mejor lectura. En perfiles frágiles el enganche es la palanca más importante para mejorar la viabilidad.</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Año modelo del auto</td>
+          <td>Autos más recientes abren más rutas. Modelos muy antiguos complican o reducen las opciones disponibles.</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Congruencia mensualidad vs ingreso</td>
+          <td>Si la mensualidad buscada es poco congruente con el ingreso, el perfilador sugiere ajustar antes de presentar.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- FÓRMULA DE CARGA -->
+  <div class="section-title">Fórmula de carga financiera</div>
+  <div class="formula-box">
+    <div class="formula-title">Cálculo orientativo</div>
+    <div class="formula-text">
+      Carga % = (Deudas mensuales + Mensualidad buscada) ÷ Ingreso mensual × 100
+    </div>
+    <div class="semaforo">
+      <div class="sem-item sem-verde">
+        <div class="sem-label">✅ Cómoda</div>
+        <div class="sem-range">≤ 35% — operación sana, cliente con margen</div>
+      </div>
+      <div class="sem-item sem-ambar">
+        <div class="sem-label">⚠️ Justa</div>
+        <div class="sem-range">36%–40% — aceptable, requiere cuidado</div>
+      </div>
+      <div class="sem-item sem-rojo">
+        <div class="sem-label">🚨 Apretada</div>
+        <div class="sem-range">&gt; 40% — riesgosa, recomendar reestructura</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VIABILIDAD INICIAL -->
+  <div class="section-title">Clasificación de viabilidad inicial</div>
+  <div class="viability-grid">
+    <div class="viab-card viab-alta">
+      <div class="viab-label">Alta</div>
+      <div class="viab-profile">Perfil: Tradicional</div>
+      <p>El caso luce bien perfilado. Cliente formal, ingreso estable, historial bueno y enganche razonable. Apto para rutas competitivas directamente.</p>
+    </div>
+    <div class="viab-card viab-media">
+      <div class="viab-label">Media</div>
+      <div class="viab-profile">Perfil: Flexible / Tradicional con ajustes</div>
+      <p>El caso puede funcionar, pero hay puntos de tensión: comprobación parcial, historial regular o carga ajustada. Requiere ajustes o cautela.</p>
+    </div>
+    <div class="viab-card viab-baja">
+      <div class="viab-label">Baja</div>
+      <div class="viab-profile">Perfil: Delicado / Alternativo</div>
+      <p>El caso luce delicado: historial malo, sin comprobación, carga apretada o enganche muy bajo. Conviene reestructurar antes de moverlo.</p>
+    </div>
+  </div>
+
+  <!-- REGLAS DE NEGOCIO -->
+  <div class="section-title">Reglas de negocio por variable</div>
+  <div class="rules-grid">
+    <div class="rule-card">
+      <h4>📋 Historial crediticio</h4>
+      <ul>
+        <li><span class="dot"></span>Bueno → favorece ruta tradicional</li>
+        <li><span class="dot"></span>Regular → puede requerir ajustes</li>
+        <li><span class="dot"></span>Malo → alternativa o reestructura</li>
+        <li><span class="dot"></span>Sin historial → no elimina viabilidad, requiere cuidado</li>
+      </ul>
+    </div>
+    <div class="rule-card">
+      <h4>📄 Comprobación de ingresos</h4>
+      <ul>
+        <li><span class="dot"></span>Sí comprueba → ruta tradicional</li>
+        <li><span class="dot"></span>Parcial → mueve el caso a flexible</li>
+        <li><span class="dot"></span>No comprueba → reduce opciones tradicionales</li>
+      </ul>
+    </div>
+    <div class="rule-card">
+      <h4>👷 Ocupación</h4>
+      <ul>
+        <li><span class="dot"></span>Asalariado / pensionado → mejor apertura en tradicional</li>
+        <li><span class="dot"></span>Independiente / negocio propio → viable, depende de comprobación</li>
+        <li><span class="dot"></span>Informal → ruta alternativa o ajustes</li>
+      </ul>
+    </div>
+    <div class="rule-card">
+      <h4>💰 Enganche</h4>
+      <ul>
+        <li><span class="dot"></span>Mayor enganche → mejor lectura general</li>
+        <li><span class="dot"></span>Enganche bajo → debilita la operación</li>
+        <li><span class="dot"></span>En perfiles frágiles → palanca más importante</li>
+      </ul>
+    </div>
+    <div class="rule-card">
+      <h4>🚗 Año modelo del auto</h4>
+      <ul>
+        <li><span class="dot"></span>Reciente → abre más rutas de financiamiento</li>
+        <li><span class="dot"></span>Antiguo → puede complicar las opciones</li>
+        <li><span class="dot"></span>Unidades especiales → mayor cautela</li>
+      </ul>
+    </div>
+    <div class="rule-card">
+      <h4>📊 Capacidad de pago</h4>
+      <ul>
+        <li><span class="dot"></span>Carga alta → el perfilador advierte al vendedor</li>
+        <li><span class="dot"></span>Mensualidad incongruente → sugiere ajuste</li>
+        <li><span class="dot"></span>Aunque el caso sea movible, si la carga es apretada → se señala</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SALIDA -->
+  <div class="section-title">9 campos del resultado express</div>
+  <div class="output-grid">
+    <div class="output-card">
+      <div class="out-field">Viabilidad inicial</div>
+      <div class="out-values">
+        <span class="pill pill-green">Alta</span>
+        <span class="pill pill-yellow">Media</span>
+        <span class="pill pill-red">Baja</span>
+      </div>
+    </div>
+    <div class="output-card">
+      <div class="out-field">Tipo de perfil</div>
+      <div class="out-values">
+        <span class="pill">Tradicional</span>
+        <span class="pill">Trad. con ajustes</span>
+        <span class="pill">Flexible</span>
+        <span class="pill">Alternativo</span>
+        <span class="pill pill-red">Delicado</span>
+      </div>
+    </div>
+    <div class="output-card">
+      <div class="out-field">Capacidad de pago estimada</div>
+      <div class="out-values">
+        <span class="pill pill-green">Alta</span>
+        <span class="pill pill-yellow">Media</span>
+        <span class="pill pill-red">Baja</span>
+      </div>
+    </div>
+    <div class="output-card">
+      <div class="out-field">Nivel de carga financiera</div>
+      <div class="out-values">
+        <span class="pill pill-green">Cómoda ≤35%</span>
+        <span class="pill pill-yellow">Justa 36–40%</span>
+        <span class="pill pill-red">Apretada &gt;40%</span>
+      </div>
+    </div>
+    <div class="output-card" style="grid-column: span 2;">
+      <div class="out-field">Ruta sugerida (solo una de 5)</div>
+      <div class="out-values">
+        <span class="pill pill-green">Opción tradicional bancaria</span>
+        <span class="pill pill-green">Tradicional con ajustes</span>
+        <span class="pill pill-yellow">Opción flexible</span>
+        <span class="pill pill-yellow">Opción alternativa</span>
+        <span class="pill pill-red">Reestructurar antes de ingresar</span>
+      </div>
+    </div>
+    <div class="output-card">
+      <div class="out-field">Por qué</div>
+      <div style="font-size:.82rem;color:#374151;">2–4 líneas en lenguaje comercial de piso</div>
+    </div>
+    <div class="output-card">
+      <div class="out-field">Ajuste sugerido</div>
+      <div style="font-size:.82rem;color:#374151;">Subir enganche / bajar monto / cambiar unidad / ampliar plazo / ninguno por el momento</div>
+    </div>
+    <div class="output-card">
+      <div class="out-field">Qué debe decir el vendedor</div>
+      <div style="font-size:.82rem;color:#374151;">Frase entre comillas, natural, que el vendedor puede copiar-pegar</div>
+    </div>
+    <div class="output-card">
+      <div class="out-field">Advertencia comercial</div>
+      <div style="font-size:.82rem;color:#374151;">Solo si Viabilidad Media/Baja o carga Apretada. Si no aplica: "Ninguna en este momento"</div>
+    </div>
+  </div>
+
+  <footer>
+    Perfilador Express de Orientación Comercial · Crédito Automotriz México · v2.0 · 2026
+  </footer>
+
+</div>
+
+
+</body></html>

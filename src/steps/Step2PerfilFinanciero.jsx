@@ -27,35 +27,43 @@ function validar(campos) {
     errores.historialCrediticio = 'Selecciona el historial crediticio percibido.'
   }
 
-  // Deudas pueden ser 0 (cliente sin deudas), pero no negativas ni vacías
+  // Deudas pueden ser 0, pero no vacías ni negativas
   if (campos.deudasMensuales === '' || campos.deudasMensuales === null || campos.deudasMensuales === undefined) {
     errores.deudasMensuales = 'Ingresa las deudas mensuales (puede ser $0 si no tiene).'
   } else if (Number(campos.deudasMensuales) < 0) {
     errores.deudasMensuales = 'Las deudas no pueden ser negativas.'
   }
 
-  // Enganche puede ser 0 (sin enganche), pero debe capturarse
-  if (campos.enganche === '' || campos.enganche === null || campos.enganche === undefined) {
-    errores.enganche = 'Ingresa el enganche disponible (puede ser $0).'
-  } else if (Number(campos.enganche) < 0) {
-    errores.enganche = 'El enganche no puede ser negativo.'
+  // Renta/hipoteca puede ser 0 (domicilio propio pagado o familiar), pero debe capturarse
+  if (campos.rentaHipoteca === '' || campos.rentaHipoteca === null || campos.rentaHipoteca === undefined) {
+    errores.rentaHipoteca = 'Ingresa la renta o hipoteca mensual (puede ser $0 si no aplica).'
+  } else if (Number(campos.rentaHipoteca) < 0) {
+    errores.rentaHipoteca = 'El monto no puede ser negativo.'
+  }
+
+  // Dependientes puede ser 0
+  if (campos.numDependientes === '' || campos.numDependientes === null || campos.numDependientes === undefined) {
+    errores.numDependientes = 'Ingresa el número de dependientes (puede ser 0).'
+  } else if (Number(campos.numDependientes) < 0) {
+    errores.numDependientes = 'El número de dependientes no puede ser negativo.'
   }
 
   return errores
 }
 
 // ---------------------------------------------------------------------------
-// Calcula una lectura previa de carga financiera para mostrar feedback
-// en tiempo real al vendedor (orientativo, no vinculante)
-// Umbrales del doc técnico: Cómoda ≤35%, Justa 36–40%, Apretada >40%
+// Calcula carga financiera actual (deudas + gastos familiares) / ingreso
+// Umbrales: Cómoda ≤35%, Justa 36–40%, Apretada >40%
 // ---------------------------------------------------------------------------
-function calcularCargaPrevia(ingresoMensual, deudasMensuales) {
+function calcularCargaPrevia(ingresoMensual, deudasMensuales, rentaHipoteca) {
   const ingreso = Number(ingresoMensual)
-  const deudas = Number(deudasMensuales)
+  const deudas = Number(deudasMensuales) || 0
+  const renta = Number(rentaHipoteca) || 0
 
-  if (!ingreso || ingreso <= 0 || deudas < 0) return null
+  if (!ingreso || ingreso <= 0) return null
 
-  const ratio = (deudas / ingreso) * 100
+  const gastosTotales = deudas + renta
+  const ratio = (gastosTotales / ingreso) * 100
 
   if (ratio <= 35) return { nivel: 'Cómoda', color: 'success', ratio }
   if (ratio <= 40) return { nivel: 'Justa', color: 'warning', ratio }
@@ -73,7 +81,8 @@ export default function Step2PerfilFinanciero() {
   const [campos, setCampos] = useState({
     historialCrediticio: state.historialCrediticio,
     deudasMensuales: state.deudasMensuales,
-    enganche: state.enganche,
+    rentaHipoteca: state.rentaHipoteca,
+    numDependientes: state.numDependientes,
   })
 
   const [errores, setErrores] = useState({})
@@ -88,11 +97,12 @@ export default function Step2PerfilFinanciero() {
     }
   }
 
-  // Calcula lectura de carga solo si hay deudas capturadas
-  const cargaPrevia =
-    campos.deudasMensuales !== ''
-      ? calcularCargaPrevia(state.ingresoMensual, campos.deudasMensuales)
-      : null
+  // Calcula lectura de carga solo si hay deudas o renta capturadas
+  const mostrarCarga =
+    campos.deudasMensuales !== '' || campos.rentaHipoteca !== ''
+  const cargaPrevia = mostrarCarga
+    ? calcularCargaPrevia(state.ingresoMensual, campos.deudasMensuales, campos.rentaHipoteca)
+    : null
 
   // Navegar al paso anterior
   function handleAnterior() {
@@ -123,7 +133,7 @@ export default function Step2PerfilFinanciero() {
           Perfil financiero
         </h2>
         <p className="text-sm text-gray-500 mt-1">
-          Historial crediticio, deudas actuales y enganche disponible.
+          Historial crediticio, deudas actuales y gastos del hogar.
           Los campos con{' '}
           <span className="text-red-500 font-medium">*</span> son obligatorios.
         </p>
@@ -132,16 +142,21 @@ export default function Step2PerfilFinanciero() {
       {/* Campos del formulario */}
       <div className="flex flex-col gap-5">
         {/* 1. Historial crediticio percibido */}
-        <Select
-          id="historialCrediticio"
-          label="Historial crediticio percibido"
-          required
-          value={campos.historialCrediticio}
-          onChange={(e) => handleChange('historialCrediticio', e.target.value)}
-          options={HISTORIAL_OPTIONS}
-          placeholder="¿Cómo describe el cliente su historial?"
-          error={errores.historialCrediticio}
-        />
+        <div>
+          <Select
+            id="historialCrediticio"
+            label="Historial crediticio percibido"
+            required
+            value={campos.historialCrediticio}
+            onChange={(e) => handleChange('historialCrediticio', e.target.value)}
+            options={HISTORIAL_OPTIONS}
+            placeholder="¿Cómo describe el cliente su historial?"
+            error={errores.historialCrediticio}
+          />
+          <p className="mt-1 text-xs text-gray-400">
+            Dato referencial — el cliente puede no conocer su historial real. El análisis no depende exclusivamente de este campo.
+          </p>
+        </div>
 
         {/* 2. Deudas mensuales aproximadas */}
         <InputNumber
@@ -158,13 +173,28 @@ export default function Step2PerfilFinanciero() {
           error={errores.deudasMensuales}
         />
 
-        {/* Feedback orientativo de carga financiera previa (sin mensualidad del auto) */}
+        {/* 3. Renta o hipoteca mensual */}
+        <InputNumber
+          id="rentaHipoteca"
+          label="Renta o hipoteca mensual"
+          required
+          value={campos.rentaHipoteca}
+          onChange={(e) => handleChange('rentaHipoteca', e.target.value)}
+          placeholder="Ej. 6000 (0 si no aplica)"
+          prefix="$"
+          suffix="MXN/mes"
+          min={0}
+          hint="Pago mensual de arrendamiento o crédito hipotecario. Captura $0 si el domicilio es propio o con familiares sin pago."
+          error={errores.rentaHipoteca}
+        />
+
+        {/* Feedback orientativo de carga financiera actual (sin mensualidad del auto) */}
         {cargaPrevia && (
           <Alert variant={cargaPrevia.color}>
             <span className="font-semibold">
               Carga actual (sin auto): {cargaPrevia.nivel}
             </span>{' '}
-            — {cargaPrevia.ratio.toFixed(0)}% del ingreso mensual ya está comprometido.
+            — {cargaPrevia.ratio.toFixed(0)}% del ingreso mensual ya está comprometido entre deudas y gastos de vivienda.
             {cargaPrevia.nivel === 'Apretada' && (
               <span className="block mt-1 text-xs">
                 El análisis completo se realiza al incluir la mensualidad del vehículo en el paso siguiente.
@@ -173,19 +203,19 @@ export default function Step2PerfilFinanciero() {
           </Alert>
         )}
 
-        {/* 3. Enganche disponible */}
+        {/* 4. Número de dependientes económicos */}
         <InputNumber
-          id="enganche"
-          label="Enganche disponible"
+          id="numDependientes"
+          label="Número de dependientes económicos"
           required
-          value={campos.enganche}
-          onChange={(e) => handleChange('enganche', e.target.value)}
-          placeholder="Ej. 60000 (0 si no tiene)"
-          prefix="$"
-          suffix="MXN"
+          value={campos.numDependientes}
+          onChange={(e) => handleChange('numDependientes', e.target.value)}
+          placeholder="Ej. 2 (0 si no tiene)"
+          suffix="personas"
           min={0}
-          hint="Monto que el cliente puede aportar de entrada al comprar el auto."
-          error={errores.enganche}
+          max={20}
+          hint="Personas que dependen del ingreso del cliente: hijos, padres, cónyuge sin ingreso, etc."
+          error={errores.numDependientes}
         />
       </div>
 

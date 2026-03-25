@@ -44,7 +44,7 @@ export default function WizardLayout({ children }) {
 
           {/* Logo SemiNuevos — derecha */}
           <img
-            src="/semi_nuevos.jpg"
+            src="/logo_seminuevos_rojo.png"
             alt="SemiNuevos"
             className="h-9 w-auto object-contain"
             onError={(e) => {

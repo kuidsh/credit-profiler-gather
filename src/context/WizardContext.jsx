@@ -14,18 +14,23 @@ const initialState = {
   ingresoMensual: '',       // número en MXN
   compruebaIngresos: '',    // "si" | "parcial" | "no"
 
+  // Paso 1 — Datos del cliente (adicionales)
+  tipoDomicilio: '',        // "propio" | "rentado" | "familiar" | "otro"
+
   // Paso 2 — Perfil financiero
   historialCrediticio: '',  // "bueno" | "regular" | "malo" | "sin historial"
   deudasMensuales: '',      // número en MXN
-  enganche: '',             // número en MXN
+  rentaHipoteca: '',        // número en MXN (renta o hipoteca mensual)
+  numDependientes: '',      // número (dependientes económicos)
 
   // Paso 3 — Auto y operación (manejado por otro agente)
-  mensualidadBuscada: '',   // número en MXN
-  plazoDeseado: '',         // número en meses
-  aceptaAjustar: '',        // "si" | "no"
   precioAuto: '',           // número en MXN
   anioModelo: '',           // número (ej. 2024)
   tipoUnidad: '',           // "sedán" | "SUV" | "pickup" | "premium" | "híbrido/eléctrico" | "otro"
+  enganche: '',             // número en MXN (movido a paso 3, sección vehículo)
+  mensualidadBuscada: '',   // número en MXN
+  plazoDeseado: '',         // número en meses
+  aceptaAjustar: '',        // "si" | "no"
 
   // Paso 4 — Resultado (manejado por otro agente)
   resultado: null,          // objeto parseado de la respuesta de Claude
@@ -36,10 +41,10 @@ const initialState = {
 // Campos que corresponden a las 13 variables normalizadas del wizard
 // (todo excepto los campos de control: currentStep, resultado, isLoading, error)
 const WIZARD_DATA_KEYS = [
-  'ocupacion', 'antiguedad', 'ingresoMensual', 'compruebaIngresos',
-  'historialCrediticio', 'deudasMensuales', 'enganche',
+  'ocupacion', 'antiguedad', 'ingresoMensual', 'compruebaIngresos', 'tipoDomicilio',
+  'historialCrediticio', 'deudasMensuales', 'rentaHipoteca', 'numDependientes',
+  'precioAuto', 'anioModelo', 'tipoUnidad', 'enganche',
   'mensualidadBuscada', 'plazoDeseado', 'aceptaAjustar',
-  'precioAuto', 'anioModelo', 'tipoUnidad',
 ]
 
 // ---------------------------------------------------------------------------

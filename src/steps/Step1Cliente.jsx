@@ -24,6 +24,13 @@ const COMPRUEBA_OPTIONS = [
   { value: 'no', label: 'No comprueba ingresos' },
 ]
 
+const DOMICILIO_OPTIONS = [
+  { value: 'propio', label: 'Propio (pagado o en proceso)' },
+  { value: 'rentado', label: 'Rentado' },
+  { value: 'familiar', label: 'Con familiares (sin pago)' },
+  { value: 'otro', label: 'Otro' },
+]
+
 // Reglas de validación mínima — no permitir avanzar sin datos clave
 function validar(campos) {
   const errores = {}
@@ -44,6 +51,10 @@ function validar(campos) {
     errores.compruebaIngresos = 'Selecciona si el cliente comprueba sus ingresos.'
   }
 
+  if (!campos.tipoDomicilio) {
+    errores.tipoDomicilio = 'Selecciona el tipo de domicilio del cliente.'
+  }
+
   return errores
 }
 
@@ -61,6 +72,7 @@ export default function Step1Cliente() {
     antiguedad: state.antiguedad,
     ingresoMensual: state.ingresoMensual,
     compruebaIngresos: state.compruebaIngresos,
+    tipoDomicilio: state.tipoDomicilio,
   })
 
   // Errores de validación — solo se muestran después de intentar avanzar
@@ -161,6 +173,18 @@ export default function Step1Cliente() {
           options={COMPRUEBA_OPTIONS}
           placeholder="¿Tiene documentos de ingresos?"
           error={errores.compruebaIngresos}
+        />
+
+        {/* 5. Tipo de domicilio */}
+        <Select
+          id="tipoDomicilio"
+          label="Tipo de domicilio del cliente"
+          required
+          value={campos.tipoDomicilio}
+          onChange={(e) => handleChange('tipoDomicilio', e.target.value)}
+          options={DOMICILIO_OPTIONS}
+          placeholder="¿Cómo es el domicilio del cliente?"
+          error={errores.tipoDomicilio}
         />
       </div>
 

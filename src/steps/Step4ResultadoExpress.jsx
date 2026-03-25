@@ -2,23 +2,16 @@
  * Step4ResultadoExpress.jsx
  * Paso 4 del wizard: muestra el resultado del análisis comercial de Claude.
  *
- * Estados posibles de esta pantalla:
- *   1. isLoading === true  → spinner "Analizando perfil comercial..."
- *   2. error !== null       → mensaje de error amigable + botón "Reintentar"
- *   3. resultado !== null   → tarjeta de resultado con los 9 campos
- *
- * La vista del resultado tiene dos modos:
- *   - "resumida": muestra solo los 4 campos clave (viabilidad, perfil, carga, ruta)
- *   - "completa": muestra los 9 campos
+ * Estados posibles:
+ *   1. isLoading === true  → spinner
+ *   2. error !== null       → mensaje de error + botón "Reintentar"
+ *   3. resultado !== null   → tarjeta de resultado
  *
  * Reglas de color:
- *   viabilidadInicial: Alta=verde, Media=amarillo, Baja=rojo
- *   cargaFinanciera:   Cómoda=verde, Justa=amarillo, Apretada=rojo
- *
- * Restricciones aplicadas:
- *   - No muestra "Advertencia comercial" si el valor es "Ninguna en este momento"
- *   - Disclaimer fijo al final: "Este análisis no representa una aprobación formal de crédito"
- *   - Texto de frase del vendedor en bloque destacado con comillas tipográficas
+ *   viabilidadInicial:         Alta=verde, Media=amarillo, Baja=rojo
+ *   clasificacionRecomendada:  Banco=azul, Financiera=amarillo, Subprime=rojo
+ *   cargaFinanciera:           Cómoda=verde, Justa=amarillo, Apretada=rojo
+ *   Bloque "Qué decirle al cliente": color según viabilidadInicial
  */
 
 import { useState } from 'react';
@@ -27,10 +20,6 @@ import { usePerfilador } from '../hooks/usePerfilador';
 
 // ── Helpers de color ───────────────────────────────────────────────────────
 
-/**
- * Devuelve clases Tailwind para el badge de viabilidad.
- * Alta=verde, Media=amarillo/naranja, Baja=rojo
- */
 function viabilidadClasses(valor) {
   const v = (valor || '').toLowerCase();
   if (v === 'alta')  return 'bg-green-100 text-green-800 border-green-300';
@@ -39,10 +28,14 @@ function viabilidadClasses(valor) {
   return 'bg-slate-100 text-slate-700 border-slate-300';
 }
 
-/**
- * Devuelve clases Tailwind para el badge de carga financiera.
- * Cómoda=verde, Justa=amarillo, Apretada=rojo
- */
+function clasificacionClasses(valor) {
+  const v = (valor || '').toLowerCase();
+  if (v === 'banco')      return 'bg-blue-100 text-blue-800 border-blue-300';
+  if (v === 'financiera') return 'bg-yellow-100 text-yellow-800 border-yellow-300';
+  if (v === 'subprime')   return 'bg-red-100 text-red-800 border-red-300';
+  return 'bg-slate-100 text-slate-700 border-slate-300';
+}
+
 function cargaClasses(valor) {
   const v = (valor || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   if (v === 'comoda')   return 'bg-green-100 text-green-800 border-green-300';
@@ -52,9 +45,17 @@ function cargaClasses(valor) {
 }
 
 /**
- * Indica si debe mostrarse la advertencia comercial.
- * Se omite cuando el valor es vacío o contiene "ninguna".
+ * Clases para el bloque de frase del vendedor según la viabilidad.
+ * Alta=verde, Media=amarillo, Baja=rojo
  */
+function fraseVendedorBlockClasses(viabilidad) {
+  const v = (viabilidad || '').toLowerCase();
+  if (v === 'alta')  return { border: 'border-green-300', bg: 'bg-green-50', label: 'text-green-700', blockquote: 'border-green-400 bg-green-50' };
+  if (v === 'media') return { border: 'border-yellow-300', bg: 'bg-yellow-50', label: 'text-yellow-700', blockquote: 'border-yellow-400 bg-yellow-50' };
+  if (v === 'baja')  return { border: 'border-red-300', bg: 'bg-red-50', label: 'text-red-700', blockquote: 'border-red-400 bg-red-50' };
+  return { border: 'border-brand-200', bg: 'bg-brand-50', label: 'text-brand-600', blockquote: 'border-brand-400 bg-brand-50' };
+}
+
 function shouldShowAdvertencia(valor) {
   if (!valor) return false;
   return !valor.toLowerCase().includes('ninguna');
@@ -64,9 +65,7 @@ function shouldShowAdvertencia(valor) {
 
 function Badge({ children, colorClasses }) {
   return (
-    <span
-      className={`inline-block px-3 py-1 rounded-full text-sm font-bold border ${colorClasses}`}
-    >
+    <span className={`inline-block px-3 py-1 rounded-full text-sm font-bold border ${colorClasses}`}>
       {children}
     </span>
   );
@@ -88,7 +87,6 @@ function ResultRow({ label, children }) {
 function LoadingView() {
   return (
     <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
-      {/* Spinner animado */}
       <div
         className="w-14 h-14 rounded-full border-4 border-brand-200 border-t-brand-600 animate-spin mb-6"
         aria-label="Cargando"
@@ -108,21 +106,18 @@ function LoadingView() {
 function ErrorView({ mensaje, onReintentar, onVolver }) {
   return (
     <div className="flex flex-col items-center px-4 py-12 text-center max-w-sm mx-auto">
-      {/* Ícono de advertencia (SVG inline para no depender de librería) */}
       <div className="w-14 h-14 rounded-full bg-orange-100 flex items-center justify-center mb-5">
         <svg viewBox="0 0 24 24" className="w-8 h-8 text-orange-500" fill="none" stroke="currentColor" strokeWidth="2">
           <path strokeLinecap="round" strokeLinejoin="round"
             d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
         </svg>
       </div>
-
       <h3 className="text-lg font-bold text-slate-700 mb-2">
         No se pudo obtener el análisis
       </h3>
       <p className="text-sm text-slate-500 mb-6 leading-relaxed">
         {mensaje || 'Ocurrió un error al analizar el perfil. Verifica tu conexión e intenta de nuevo.'}
       </p>
-
       <div className="flex flex-col gap-3 w-full">
         <button
           type="button"
@@ -149,39 +144,41 @@ function ErrorView({ mensaje, onReintentar, onVolver }) {
 // ── Estado: Resultado ──────────────────────────────────────────────────────
 
 function ResultadoCard({ resultado, onNuevaConsulta }) {
-  const [vista, setVista] = useState('resumida'); // 'resumida' | 'completa'
+  const [vista, setVista] = useState('resumida');
 
   const {
     viabilidadInicial,
-    tipoPerfil,
+    clasificacionRecomendada,
     capacidadPago,
     cargaFinanciera,
-    rutaSugerida,
     porQue,
-    ajusteSugerido,
+    recomendacionesAccionables,
     fraseVendedor,
     advertenciaComercial,
   } = resultado;
 
   const mostrarAdvertencia = shouldShowAdvertencia(advertenciaComercial);
+  const fraseColors = fraseVendedorBlockClasses(viabilidadInicial);
 
-  /**
-   * Copia el resultado completo al portapapeles en formato texto plano.
-   * No usa Clipboard API sin permiso: envuelto en try/catch amigable.
-   */
-  const handleCopiar = async () => {
+  // Parsea bullets de recomendaciones (líneas que empiezan con "- " o "• ")
+  const bulletLines = (recomendacionesAccionables || '')
+    .split('\n')
+    .map((l) => l.replace(/^[-•]\s*/, '').trim())
+    .filter((l) => l.length > 0);
+
+  const handleCopiarClick = async () => {
     const texto = [
       'Resultado express – Perfilador Comercial',
       '',
       `Viabilidad inicial: ${viabilidadInicial}`,
-      `Tipo de perfil: ${tipoPerfil}`,
+      `Clasificación recomendada: ${clasificacionRecomendada}`,
       `Capacidad de pago estimada: ${capacidadPago}`,
-      `Nivel de carga financiera estimada: ${cargaFinanciera}`,
-      `Ruta sugerida: ${rutaSugerida}`,
+      `Nivel de carga financiera proyectada: ${cargaFinanciera}`,
       '',
       `Por qué: ${porQue}`,
       '',
-      `Ajuste sugerido antes de ingresar: ${ajusteSugerido}`,
+      'Recomendaciones accionables:',
+      ...bulletLines.map((b) => `- ${b}`),
       '',
       `Qué debe decir el vendedor al cliente: "${fraseVendedor}"`,
       mostrarAdvertencia ? `\nAdvertencia comercial: ${advertenciaComercial}` : '',
@@ -193,17 +190,14 @@ function ResultadoCard({ resultado, onNuevaConsulta }) {
 
     try {
       await navigator.clipboard.writeText(texto);
-      // Retroalimentación visual simple: cambia el label del botón brevemente
-      // (manejado en el componente padre con un estado local del botón)
     } catch {
-      // En entornos sin permiso de portapapeles, silenciar el error
+      // Silenciar error si no hay permiso de portapapeles
     }
   };
 
-  // Estado del botón "Copiar" para retroalimentación visual
   const [copied, setCopied] = useState(false);
-  const handleCopiarClick = async () => {
-    await handleCopiar();
+  const onCopiar = async () => {
+    await handleCopiarClick();
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -233,7 +227,7 @@ function ResultadoCard({ resultado, onNuevaConsulta }) {
         </div>
       )}
 
-      {/* Tarjeta principal de resultado */}
+      {/* Tarjeta principal */}
       <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
 
         {/* Sección de campos clave — siempre visible */}
@@ -244,18 +238,20 @@ function ResultadoCard({ resultado, onNuevaConsulta }) {
             </Badge>
           </ResultRow>
 
-          <ResultRow label="Tipo de perfil">
-            <span className="font-semibold">{tipoPerfil}</span>
+          <ResultRow label="Clasificación recomendada">
+            <Badge colorClasses={clasificacionClasses(clasificacionRecomendada)}>
+              {clasificacionRecomendada}
+            </Badge>
           </ResultRow>
 
-          <ResultRow label="Nivel de carga financiera estimada">
+          <ResultRow label="Nivel de carga financiera proyectada">
             <Badge colorClasses={cargaClasses(cargaFinanciera)}>
               {cargaFinanciera}
             </Badge>
           </ResultRow>
 
-          <ResultRow label="Ruta sugerida">
-            <span className="font-medium text-brand-700">{rutaSugerida}</span>
+          <ResultRow label="Capacidad de pago estimada">
+            <span className="font-semibold">{capacidadPago}</span>
           </ResultRow>
         </div>
 
@@ -263,29 +259,28 @@ function ResultadoCard({ resultado, onNuevaConsulta }) {
         {vista === 'completa' && (
           <div className="border-t border-slate-100 p-4 space-y-0 bg-slate-50">
 
-            <ResultRow label="Capacidad de pago estimada">
-              {capacidadPago}
-            </ResultRow>
-
             <ResultRow label="Por qué">
-              {/* porQue puede tener saltos de línea desde Claude */}
               {porQue.split('\n').map((linea, i) => (
                 <p key={i} className={i > 0 ? 'mt-1' : ''}>{linea}</p>
               ))}
             </ResultRow>
 
-            {ajusteSugerido && (
-              <ResultRow label="Ajuste sugerido antes de ingresar">
-                {ajusteSugerido}
+            {bulletLines.length > 0 && (
+              <ResultRow label="Recomendaciones accionables">
+                <ul className="list-disc list-inside space-y-1">
+                  {bulletLines.map((b, i) => (
+                    <li key={i}>{b}</li>
+                  ))}
+                </ul>
               </ResultRow>
             )}
 
-            {/* Frase del vendedor — bloque destacado, fácil de copiar */}
+            {/* Frase del vendedor en vista completa */}
             <div className="py-3">
               <p className="text-xs font-semibold uppercase tracking-wide text-slate-400 mb-2">
                 Qué debe decir el vendedor al cliente
               </p>
-              <blockquote className="border-l-4 border-brand-400 bg-brand-50 rounded-r-xl px-4 py-3">
+              <blockquote className={`border-l-4 ${fraseColors.blockquote} rounded-r-xl px-4 py-3`}>
                 <p className="text-slate-800 text-sm leading-relaxed italic">
                   "{fraseVendedor}"
                 </p>
@@ -295,7 +290,7 @@ function ResultadoCard({ resultado, onNuevaConsulta }) {
           </div>
         )}
 
-        {/* Botones de vista — toggle resumida / completa */}
+        {/* Toggle resumida / completa */}
         <div className="border-t border-slate-100 flex">
           <button
             type="button"
@@ -321,10 +316,10 @@ function ResultadoCard({ resultado, onNuevaConsulta }) {
         </div>
       </div>
 
-      {/* Frase del vendedor en vista resumida — siempre visible para uso inmediato en piso */}
+      {/* Frase del vendedor en vista resumida — color dinámico según viabilidad */}
       {vista === 'resumida' && fraseVendedor && (
-        <div className="mt-4 rounded-xl border border-brand-200 bg-brand-50 px-4 py-3">
-          <p className="text-xs font-semibold text-brand-600 uppercase tracking-wide mb-1">
+        <div className={`mt-4 rounded-xl border ${fraseColors.border} ${fraseColors.bg} px-4 py-3`}>
+          <p className={`text-xs font-semibold uppercase tracking-wide mb-1 ${fraseColors.label}`}>
             Qué decirle al cliente
           </p>
           <p className="text-slate-800 text-sm italic leading-relaxed">
@@ -343,12 +338,11 @@ function ResultadoCard({ resultado, onNuevaConsulta }) {
       <div className="mt-6 flex flex-col gap-3">
         <button
           type="button"
-          onClick={handleCopiarClick}
+          onClick={onCopiar}
           className="w-full py-3 px-4 rounded-xl border-2 border-slate-300 text-slate-700
             font-semibold text-base hover:border-slate-400 hover:bg-slate-50
             transition min-h-[44px] flex items-center justify-center gap-2"
         >
-          {/* Ícono de portapapeles */}
           <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2">
             <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
             <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
@@ -369,28 +363,23 @@ function ResultadoCard({ resultado, onNuevaConsulta }) {
   );
 }
 
-// ── Componente principal (orquestador de estados) ──────────────────────────
+// ── Componente principal ───────────────────────────────────────────────────
 
 export default function Step4ResultadoExpress() {
   const { isLoading, error, resultado, resetWizard, goToStep } = useWizard();
   const { triggerAnalysis } = usePerfilador();
 
-  // Reintentar: vuelve a disparar el análisis sin cambiar de pantalla
   const handleReintentar = () => {
     triggerAnalysis();
   };
 
-  // Volver al paso anterior para corregir datos
   const handleVolver = () => {
     goToStep(3);
   };
 
-  // Empezar desde cero
   const handleNuevaConsulta = () => {
     resetWizard();
   };
-
-  // ── Render condicional según estado ──
 
   if (isLoading) {
     return <LoadingView />;
@@ -415,8 +404,6 @@ export default function Step4ResultadoExpress() {
     );
   }
 
-  // Estado inicial: Step4 montado pero análisis aún no iniciado
-  // (caso raro — normalmente Step3 dispara triggerAnalysis antes de navegar aquí)
   return (
     <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
       <p className="text-slate-500 text-sm">

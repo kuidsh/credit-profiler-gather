@@ -130,7 +130,8 @@ function SelectField({ id, value, onChange, options, error }) {
 function validate(form) {
   const errors = {};
 
-  if (!form.precioAuto || Number(form.precioAuto) <= 0) {
+  const precio = Number(form.precioAuto);
+  if (!form.precioAuto || precio <= 0) {
     errors.precioAuto = 'Ingresa el precio aproximado del auto.';
   }
 
@@ -141,6 +142,16 @@ function validate(form) {
 
   if (!form.tipoUnidad) {
     errors.tipoUnidad = 'Selecciona el tipo de unidad.';
+  }
+
+  // Enganche: requerido, mínimo 20% del precio del auto
+  const enganche = Number(form.enganche);
+  if (form.enganche === '' || form.enganche === null || form.enganche === undefined) {
+    errors.enganche = 'Ingresa el enganche disponible.';
+  } else if (enganche < 0) {
+    errors.enganche = 'El enganche no puede ser negativo.';
+  } else if (precio > 0 && enganche < precio * 0.20) {
+    errors.enganche = `El enganche mínimo recomendado es el 20% del precio ($${(precio * 0.20).toLocaleString('es-MX')}).`;
   }
 
   if (!form.mensualidadBuscada || Number(form.mensualidadBuscada) <= 0) {
@@ -158,6 +169,14 @@ function validate(form) {
   return errors;
 }
 
+// Calcula el porcentaje de enganche respecto al precio del auto
+function calcularPctEnganche(enganche, precioAuto) {
+  const e = Number(enganche);
+  const p = Number(precioAuto);
+  if (!p || p <= 0 || !e || e <= 0) return null;
+  return (e / p) * 100;
+}
+
 // ── Componente principal ───────────────────────────────────────────────────
 
 export default function Step3AutoOperacion() {
@@ -169,6 +188,7 @@ export default function Step3AutoOperacion() {
     precioAuto:        wizardData.precioAuto        ? String(wizardData.precioAuto)        : '',
     anioModelo:        wizardData.anioModelo         ? String(wizardData.anioModelo)         : '',
     tipoUnidad:        wizardData.tipoUnidad         || '',
+    enganche:          wizardData.enganche           ? String(wizardData.enganche)           : '',
     mensualidadBuscada:wizardData.mensualidadBuscada ? String(wizardData.mensualidadBuscada) : '',
     plazoDeseado:      wizardData.plazoDeseado       ? String(wizardData.plazoDeseado)       : '',
     aceptaAjustar:     wizardData.aceptaAjustar      || '',
@@ -209,6 +229,7 @@ export default function Step3AutoOperacion() {
       precioAuto:         Number(form.precioAuto),
       anioModelo:         Number(form.anioModelo),
       tipoUnidad:         form.tipoUnidad,
+      enganche:           Number(form.enganche),
       mensualidadBuscada: Number(form.mensualidadBuscada),
       plazoDeseado:       Number(form.plazoDeseado),
       aceptaAjustar:      form.aceptaAjustar,
@@ -291,6 +312,37 @@ export default function Step3AutoOperacion() {
             options={TIPOS_UNIDAD}
             error={errors.tipoUnidad}
           />
+        </div>
+
+        {/* Enganche disponible */}
+        <div>
+          <FieldLabel required htmlFor="enganche">
+            Enganche disponible
+          </FieldLabel>
+          <InputMXN
+            id="enganche"
+            value={form.enganche}
+            onChange={handleChange('enganche')}
+            placeholder="Ej. 70,000"
+            error={errors.enganche}
+          />
+          {/* Feedback visual del % de enganche */}
+          {(() => {
+            const pct = calcularPctEnganche(form.enganche, form.precioAuto);
+            if (pct === null) return null;
+            const color = pct >= 20 && pct <= 80
+              ? 'text-green-600'
+              : pct > 80
+              ? 'text-yellow-600'
+              : 'text-red-500';
+            return (
+              <p className={`mt-1 text-xs font-medium ${color}`}>
+                Enganche: {pct.toFixed(1)}% del precio del auto
+                {pct > 80 && ' — enganche muy alto, verificar conveniencia'}
+                {pct >= 20 && pct <= 80 && ' — dentro del rango recomendado (20%–80%)'}
+              </p>
+            );
+          })()}
         </div>
 
         {/* Mensualidad que busca el cliente */}
