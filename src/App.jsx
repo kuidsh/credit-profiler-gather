@@ -4,6 +4,7 @@ import {
   Routes,
   Route,
   Navigate,
+  Outlet,
   useNavigate,
   useLocation,
 } from 'react-router-dom'
@@ -26,6 +27,18 @@ const Step4ResultadoExpress = lazy(() =>
   import('./steps/Step4ResultadoExpress.jsx')
 )
 
+// Paso 5 — recopilacion de datos personales.
+// Solo alcanzable desde Step4 cuando clasificacion = Banco o Financiera.
+const Step5DatosPersonales = lazy(() =>
+  import('./steps/Step5DatosPersonales.jsx')
+)
+
+// Pagina de clientes historicos — accesible desde enlace en Step5 sub-paso 1.
+// Tiene su propio header y footer; se renderiza fuera de WizardLayout.
+const ClientesHistoricos = lazy(() =>
+  import('./pages/ClientesHistoricos.jsx')
+)
+
 // ---------------------------------------------------------------------------
 // Mapa de rutas ↔ paso numérico
 // Usado para sincronizar el contexto con la URL actual.
@@ -35,6 +48,7 @@ const ROUTE_TO_STEP = {
   '/paso-2': 2,
   '/paso-3': 3,
   '/paso-4': 4,
+  '/paso-5': 5,
 }
 
 const STEP_TO_ROUTE = {
@@ -42,6 +56,7 @@ const STEP_TO_ROUTE = {
   2: '/paso-2',
   3: '/paso-3',
   4: '/paso-4',
+  5: '/paso-5',
 }
 
 /**
@@ -68,7 +83,10 @@ function StepSync() {
   // Cuando currentStep cambia por goToStep() (desde Step3/Step4) → navega
   useEffect(() => {
     const expectedRoute = STEP_TO_ROUTE[state.currentStep]
-    if (expectedRoute && location.pathname !== expectedRoute) {
+    // Solo sincronizar si estamos en una ruta de paso numerado para no
+    // redirigir desde /clientes cuando el contexto tiene currentStep=5
+    const enRutaDePaso = Object.keys(ROUTE_TO_STEP).includes(location.pathname)
+    if (expectedRoute && enRutaDePaso && location.pathname !== expectedRoute) {
       navigate(expectedRoute)
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -88,6 +106,18 @@ function StepLoadingFallback() {
   )
 }
 
+/**
+ * WizardShell — layout route que envuelve todos los pasos del wizard (1-5).
+ * Los renderiza dentro de WizardLayout. La ruta /clientes queda fuera de esto.
+ */
+function WizardShell() {
+  return (
+    <WizardLayout>
+      <Outlet />
+    </WizardLayout>
+  )
+}
+
 // ---------------------------------------------------------------------------
 // App — raíz de la aplicación
 // ---------------------------------------------------------------------------
@@ -98,12 +128,16 @@ export default function App() {
         {/* Sincroniza URL ↔ currentStep */}
         <StepSync />
 
-        <WizardLayout>
-          <Suspense fallback={<StepLoadingFallback />}>
-            <Routes>
-              {/* Ruta raíz → redirige al paso 1 */}
-              <Route path="/" element={<Navigate to="/paso-1" replace />} />
+        <Suspense fallback={<StepLoadingFallback />}>
+          <Routes>
+            {/* Ruta raíz → redirige al paso 1 */}
+            <Route path="/" element={<Navigate to="/paso-1" replace />} />
 
+            {/* Pagina de clientes historicos — fuera de WizardLayout (tiene su propio chrome) */}
+            <Route path="/clientes" element={<ClientesHistoricos />} />
+
+            {/* Pasos del wizard — envueltos en WizardLayout via WizardShell */}
+            <Route element={<WizardShell />}>
               {/* Paso 1: Datos del cliente */}
               <Route path="/paso-1" element={<Step1Cliente />} />
 
@@ -116,11 +150,14 @@ export default function App() {
               {/* Paso 4: Resultado express (otro agente) */}
               <Route path="/paso-4" element={<Step4ResultadoExpress />} />
 
-              {/* Cualquier otra ruta → paso 1 */}
-              <Route path="*" element={<Navigate to="/paso-1" replace />} />
-            </Routes>
-          </Suspense>
-        </WizardLayout>
+              {/* Paso 5: Recopilacion de datos personales (solo Banco | Financiera) */}
+              <Route path="/paso-5" element={<Step5DatosPersonales />} />
+            </Route>
+
+            {/* Cualquier otra ruta → paso 1 */}
+            <Route path="*" element={<Navigate to="/paso-1" replace />} />
+          </Routes>
+        </Suspense>
       </WizardProvider>
     </BrowserRouter>
   )

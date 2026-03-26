@@ -180,7 +180,7 @@ function calcularPctEnganche(enganche, precioAuto) {
 // ── Componente principal ───────────────────────────────────────────────────
 
 export default function Step3AutoOperacion() {
-  const { wizardData, updateWizardData, goToStep } = useWizard();
+  const { wizardData, updateWizardData, goToStep, sesionId } = useWizard();
   const { triggerAnalysis } = usePerfilador();
 
   // Estado local del formulario, prellenado con datos del contexto si existen
@@ -237,6 +237,30 @@ export default function Step3AutoOperacion() {
 
     // Guardar datos del paso 3 en el contexto global (para persistencia y retroceso)
     updateWizardData(dataToAnalyze);
+
+    // Persistir los campos del paso 3 en el servidor (fire-and-forget — no bloquea el analisis).
+    // Se extrae solo el subconjunto de paso 3 para no enviar datos innecesarios.
+    if (sesionId) {
+      const baseUrl = import.meta.env.VITE_API_URL || '';
+      fetch(`${baseUrl}/api/sesion/${sesionId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          paso: 3,
+          data: {
+            precioAuto:          dataToAnalyze.precioAuto,
+            anioModelo:          dataToAnalyze.anioModelo,
+            tipoUnidad:          dataToAnalyze.tipoUnidad,
+            enganche:            dataToAnalyze.enganche,
+            mensualidadBuscada:  dataToAnalyze.mensualidadBuscada,
+            plazoDeseado:        dataToAnalyze.plazoDeseado,
+            aceptaAjustar:       dataToAnalyze.aceptaAjustar,
+          },
+        }),
+      }).catch((err) => {
+        console.error('[Step3] No se pudo persistir paso 3:', err);
+      });
+    }
 
     // Avanzar al paso 4 antes de la llamada para mostrar el spinner de inmediato
     goToStep(4);

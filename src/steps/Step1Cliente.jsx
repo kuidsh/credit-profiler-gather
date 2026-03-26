@@ -62,7 +62,7 @@ function validar(campos) {
 // Componente principal
 // ---------------------------------------------------------------------------
 export default function Step1Cliente() {
-  const { state, setFields, nextStep } = useWizard()
+  const { state, setFields, nextStep, setSesionIds } = useWizard()
   const navigate = useNavigate()
 
   // Estado local de los 4 campos de este paso
@@ -91,7 +91,7 @@ export default function Step1Cliente() {
   }
 
   // Intento de avanzar al paso 2
-  function handleSiguiente() {
+  async function handleSiguiente() {
     setIntentoAvanzar(true)
     const nuevosErrores = validar(campos)
 
@@ -102,6 +102,32 @@ export default function Step1Cliente() {
 
     // Persistir en el contexto global antes de navegar
     setFields(campos)
+
+    // Iniciar sesion en el servidor con los 5 campos del paso 1.
+    // Si la llamada falla no se bloquea la navegacion (fire-and-forget awaited).
+    try {
+      const baseUrl = import.meta.env.VITE_API_URL || ''
+      const res = await fetch(`${baseUrl}/api/iniciar-sesion`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ocupacion: campos.ocupacion,
+          antiguedad: campos.antiguedad,
+          ingresoMensual: campos.ingresoMensual,
+          compruebaIngresos: campos.compruebaIngresos,
+          tipoDomicilio: campos.tipoDomicilio,
+        }),
+      })
+      if (res.ok) {
+        const { sesionId } = await res.json()
+        if (sesionId) {
+          setSesionIds(sesionId, null)
+        }
+      }
+    } catch (err) {
+      console.error('[Step1] No se pudo iniciar sesion:', err)
+    }
+
     nextStep()
     navigate('/paso-2')
   }
@@ -117,6 +143,14 @@ export default function Step1Cliente() {
           Información básica de ocupación e ingresos. Los campos con{' '}
           <span className="text-red-500 font-medium">*</span> son obligatorios.
         </p>
+        {/* Enlace discreto para buscar cliente existente */}
+        <button
+          type="button"
+          onClick={() => navigate('/clientes')}
+          className="mt-2 text-sm text-brand-600 underline hover:text-brand-700 cursor-pointer text-left"
+        >
+          ¿Ya tienes datos de este cliente? Buscar cliente existente →
+        </button>
       </div>
 
       {/* Campos del formulario */}

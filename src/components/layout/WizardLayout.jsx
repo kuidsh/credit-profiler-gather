@@ -57,7 +57,7 @@ export default function WizardLayout({ children }) {
 
       {/* ── Contenido principal ─────────────────────────────────────── */}
       <main className="flex-1 w-full max-w-2xl mx-auto px-4 py-6 flex flex-col gap-6">
-        {/* Barra de progreso — oculta en el paso 4 (resultado) para más espacio */}
+        {/* Barra de progreso — oculta en los pasos 4 y 5 para dar mas espacio al contenido */}
         {state.currentStep < 4 && (
           <section aria-label="Progreso del formulario">
             <ProgressBar currentStep={state.currentStep} totalSteps={4} />

@@ -74,7 +74,7 @@ function calcularCargaPrevia(ingresoMensual, deudasMensuales, rentaHipoteca) {
 // Componente principal
 // ---------------------------------------------------------------------------
 export default function Step2PerfilFinanciero() {
-  const { state, setFields, nextStep, prevStep } = useWizard()
+  const { state, setFields, nextStep, prevStep, sesionId } = useWizard()
   const navigate = useNavigate()
 
   // Estado local — inicializado desde el contexto (conserva datos al regresar)
@@ -111,7 +111,7 @@ export default function Step2PerfilFinanciero() {
   }
 
   // Intentar avanzar al paso 3
-  function handleSiguiente() {
+  async function handleSiguiente() {
     setIntentoAvanzar(true)
     const nuevosErrores = validar(campos)
 
@@ -121,6 +121,22 @@ export default function Step2PerfilFinanciero() {
     }
 
     setFields(campos)
+
+    // Si existe sesionId, persistir los datos del paso 2 en el servidor.
+    // Si falla no se bloquea la navegacion.
+    if (sesionId) {
+      try {
+        const baseUrl = import.meta.env.VITE_API_URL || ''
+        await fetch(`${baseUrl}/api/sesion/${sesionId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ paso: 2, data: campos }),
+        })
+      } catch (err) {
+        console.error('[Step2] No se pudo persistir paso 2:', err)
+      }
+    }
+
     nextStep()
     navigate('/paso-3')
   }

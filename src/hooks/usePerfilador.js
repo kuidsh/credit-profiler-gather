@@ -57,13 +57,17 @@ async function fetchWithTimeout(url, options, timeoutMs) {
   }
 }
 
+// URL base para llamadas de persistencia — comparte el mismo origen que API_URL
+const BASE_URL = import.meta.env.VITE_API_URL || '';
+
 /**
  * usePerfilador
  * Devuelve { triggerAnalysis } — una función que ejecuta el análisis completo.
  * El estado (isLoading, error, resultado) vive en WizardContext y se actualiza aquí.
  */
+
 export function usePerfilador() {
-  const { wizardData, setIsLoading, setError, setResultado } = useWizard();
+  const { wizardData, setIsLoading, setError, setResultado, setSesionIds, sesionId } = useWizard();
 
   /**
    * triggerAnalysis
@@ -135,8 +139,42 @@ export function usePerfilador() {
         throw new Error('parse_error');
       }
 
-      // 7. Guardar resultado en el contexto → Step4 reaccionará
-      setResultado(resultado);
+      // 8. Persistir sesion completa en el servidor antes de mostrar el resultado.
+      //    setSesionIds debe ejecutarse ANTES de setResultado para que el perfilId
+      //    esté en contexto cuando Step4 renderice el CTA hacia Step5.
+      //    Si falla, se muestra el resultado de todas formas — la UI no se bloquea.
+      const guardarCompleto =
+        resultado.clasificacionRecomendada === 'Banco' ||
+        resultado.clasificacionRecomendada === 'Financiera';
+
+      try {
+        const guardarRes = await fetch(`${BASE_URL}/api/guardar-sesion`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sesionId,           // puede ser null si POST /api/iniciar-sesion fallo en paso 1
+            wizardData: data,
+            resultado,
+            guardarCompleto,
+          }),
+        });
+
+        if (!guardarRes.ok) {
+          throw new Error(`guardar-sesion HTTP ${guardarRes.status}`);
+        }
+
+        const { sesionId: nuevoSesionId, perfilId } = await guardarRes.json();
+        if (nuevoSesionId) {
+          setSesionIds(nuevoSesionId, perfilId ?? null);
+        }
+      } catch (err) {
+        console.error('[usePerfilador] No se pudo guardar la sesion:', err);
+      } finally {
+        // 9. Mostrar resultado DESPUÉS de que setSesionIds se haya ejecutado.
+        //    Esto garantiza que perfilId está en contexto antes de que Step4
+        //    renderice el CTA "Capturar datos del cliente".
+        setResultado(resultado);
+      }
 
     } catch (err) {
       console.error('[usePerfilador] Error:', err);
@@ -167,7 +205,7 @@ export function usePerfilador() {
     } finally {
       setIsLoading(false);
     }
-  }, [wizardData, setIsLoading, setError, setResultado]);
+  }, [wizardData, setIsLoading, setError, setResultado, setSesionIds, sesionId]);
 
   return { triggerAnalysis };
 }

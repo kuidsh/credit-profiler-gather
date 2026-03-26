@@ -36,6 +36,13 @@ const initialState = {
   resultado: null,          // objeto parseado de la respuesta de Claude
   isLoading: false,
   error: null,
+
+  // Paso 5 — Datos personales del cliente (solo cuando clasificacion = Banco | Financiera)
+  datosPersonales: null,    // objeto con los campos de Step5DatosPersonales
+
+  // IDs de persistencia — asignados por el servidor al guardar la sesion
+  sesionId: null,           // UUID de la sesion en sesiones_wizard
+  perfilId: null,           // UUID del perfil en perfiles_completos (null si Subprime)
 }
 
 // Campos que corresponden a las 13 variables normalizadas del wizard
@@ -60,13 +67,21 @@ function wizardReducer(state, action) {
     case 'GO_TO_STEP':
       return { ...state, currentStep: action.payload }
 
-    // Avanza al siguiente paso
+    // Avanza al siguiente paso (hasta paso 5 ahora que existe Step5)
     case 'NEXT_STEP':
-      return { ...state, currentStep: Math.min(state.currentStep + 1, 4) }
+      return { ...state, currentStep: Math.min(state.currentStep + 1, 5) }
 
     // Retrocede al paso anterior
     case 'PREV_STEP':
       return { ...state, currentStep: Math.max(state.currentStep - 1, 1) }
+
+    // Guarda los datos personales del cliente (Step5)
+    case 'SET_DATOS_PERSONALES':
+      return { ...state, datosPersonales: action.payload }
+
+    // Persiste los IDs devueltos por POST /api/guardar-sesion
+    case 'SET_SESION_IDS':
+      return { ...state, sesionId: action.payload.sesionId, perfilId: action.payload.perfilId }
 
     // Activa el estado de carga
     case 'SET_LOADING':
@@ -171,6 +186,16 @@ export function WizardProvider({ children }) {
     dispatch({ type: 'SET_LOADING', payload: true })
   }, [])
 
+  // Guarda el objeto de datos personales capturado en Step5
+  const setDatosPersonales = useCallback((datos) => {
+    dispatch({ type: 'SET_DATOS_PERSONALES', payload: datos })
+  }, [])
+
+  // Guarda los IDs de sesion y perfil devueltos por el servidor tras POST /api/guardar-sesion
+  const setSesionIds = useCallback((sesionId, perfilId) => {
+    dispatch({ type: 'SET_SESION_IDS', payload: { sesionId, perfilId } })
+  }, [])
+
   // wizardData: objeto plano con las 13 variables normalizadas
   // (lo que usan Step3 y usePerfilador para leer datos)
   const wizardData = Object.fromEntries(
@@ -203,6 +228,15 @@ export function WizardProvider({ children }) {
 
     // ── Alias adicional (Step2 local) ──
     startLoading,
+
+    // ── Step5 ──
+    datosPersonales: state.datosPersonales,
+    setDatosPersonales,
+
+    // ── IDs de persistencia ──
+    sesionId: state.sesionId,
+    perfilId: state.perfilId,
+    setSesionIds,
   }
 
   return (

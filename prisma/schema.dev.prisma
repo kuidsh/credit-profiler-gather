@@ -1,0 +1,162 @@
+// prisma/schema.dev.prisma
+// Esquema para desarrollo local con SQLite.
+// Usa: npx prisma generate --schema=prisma/schema.dev.prisma
+//      npx prisma db push    --schema=prisma/schema.dev.prisma
+//
+// NOTA: En producción se usa prisma/schema.prisma (PostgreSQL + @db.* annotations).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model SesionWizard {
+  id                       String   @id @default(uuid())
+  sesionToken              String   @unique
+  creadoEn                 DateTime @default(now())
+  actualizadoEn            DateTime @updatedAt
+  paso5ContactoGuardado    Boolean  @default(false)
+  paso5Completado          Boolean  @default(false)
+  pasoActual               Int      @default(1)
+  guardarCompleto          Boolean  @default(false)
+  clasificacionRecomendada String?
+  viabilidadInicial        String?
+  cargaFinanciera          String?
+  fuentePersistencia       String   @default("borrador")
+  datosWizardJson          String?
+
+  perfilCompleto     PerfilCompleto?
+  interaccionAnonima InteraccionAnonima?
+
+  @@index([sesionToken])
+  @@index([creadoEn])
+  @@index([guardarCompleto])
+  @@index([clasificacionRecomendada])
+  @@map("sesiones_wizard")
+}
+
+model PerfilCompleto {
+  id            String   @id @default(uuid())
+  sesionId      String   @unique
+  creadoEn      DateTime @default(now())
+  actualizadoEn DateTime @updatedAt
+
+  sesion SesionWizard @relation(fields: [sesionId], references: [id], onDelete: Cascade)
+
+  ocupacion         String
+  antiguedad        Float
+  ingresoMensual    Float
+  compruebaIngresos String
+  tipoDomicilio     String
+
+  historialCrediticio String
+  deudasMensuales     Float
+  rentaHipoteca       Float
+  numDependientes     Int
+
+  precioAuto         Float
+  anioModelo         Int
+  tipoUnidad         String
+  enganche           Float
+  mensualidadBuscada Float
+  plazoDeseado       Int
+  aceptaAjustar      Boolean
+
+  viabilidadInicial          String
+  clasificacionRecomendada   String
+  capacidadPago              String
+  cargaFinanciera            String
+  porQue                     String
+  recomendacionesAccionables String
+  fraseVendedor              String
+  advertenciaComercial       String
+  porcentajeCargaCalculado   Float
+  resultadoLlmJson           String?   // JSON completo de la respuesta LLM
+
+  datosPersonales DatosPersonalesPaso5?
+
+  @@index([sesionId])
+  @@index([clasificacionRecomendada])
+  @@index([ocupacion])
+  @@index([creadoEn])
+  @@map("perfiles_completos")
+}
+
+model DatosPersonalesPaso5 {
+  id            String   @id @default(uuid())
+  perfilId      String   @unique
+  creadoEn      DateTime @default(now())
+  actualizadoEn DateTime @updatedAt
+
+  perfil PerfilCompleto @relation(fields: [perfilId], references: [id], onDelete: Cascade)
+
+  subPasoCompletado Int     @default(1)
+  completado        Boolean @default(false)
+
+  nombres         String
+  apellidoPaterno String
+  apellidoMaterno String?
+  telefonoCelular String
+
+  fechaNacimiento     DateTime?
+  rfc                 String?
+  curp                String?
+  genero              String?
+  estadoCivil         String?
+  correoElectronico   String?
+  telefonoCasaTrabajo String?
+
+  calle               String?
+  numeroExterior      String?
+  numeroInterior      String?
+  colonia             String?
+  municipioDelegacion String?
+  estadoRepublica     String?
+  codigoPostal        String?
+  tipoDomicilioPaso5  String?
+  tiempoEnDomicilio   String?
+
+  @@index([perfilId])
+  @@index([telefonoCelular])
+  @@index([rfc])
+  @@index([correoElectronico])
+  @@index([completado])
+  @@map("datos_personales_paso5")
+}
+
+model InteraccionAnonima {
+  id       String   @id @default(uuid())
+  sesionId String   @unique
+  creadoEn DateTime @default(now())
+
+  sesion SesionWizard @relation(fields: [sesionId], references: [id], onDelete: Cascade)
+
+  ocupacion           String
+  rangosAntiguedad    String
+  compruebaIngresos   String
+  tipoDomicilio       String
+  historialCrediticio String
+  numDependientes     Int
+  anioModelo          Int
+  tipoUnidad          String
+  plazoDeseado        Int
+  aceptaAjustar       Boolean
+
+  rangoIngresos String
+  rangoEnganche String
+
+  viabilidadInicial        String
+  clasificacionRecomendada String
+  capacidadPago            String
+  cargaFinanciera          String
+
+  @@index([sesionId])
+  @@index([creadoEn])
+  @@index([ocupacion])
+  @@index([clasificacionRecomendada])
+  @@map("interacciones_anonimas")
+}

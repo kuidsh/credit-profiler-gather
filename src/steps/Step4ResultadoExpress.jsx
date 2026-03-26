@@ -143,7 +143,7 @@ function ErrorView({ mensaje, onReintentar, onVolver }) {
 
 // ── Estado: Resultado ──────────────────────────────────────────────────────
 
-function ResultadoCard({ resultado, onNuevaConsulta }) {
+function ResultadoCard({ resultado, onNuevaConsulta, onIniciarDatosPersonales }) {
   const [vista, setVista] = useState('resumida');
 
   const {
@@ -350,6 +350,23 @@ function ResultadoCard({ resultado, onNuevaConsulta }) {
           {copied ? 'Copiado' : 'Copiar resultado'}
         </button>
 
+        {/* CTA hacia Step5 — solo cuando clasificacion es Banco o Financiera */}
+        {(['banco', 'financiera'].includes((clasificacionRecomendada || '').toLowerCase())) && (
+          <button
+            type="button"
+            onClick={onIniciarDatosPersonales}
+            className="w-full py-3 px-4 rounded-xl bg-green-600 text-white font-bold text-base
+              hover:bg-green-700 active:bg-green-800 transition shadow-md min-h-[44px]
+              flex items-center justify-center gap-2"
+          >
+            <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round"
+                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+            Continuar con recopilacion de datos
+          </button>
+        )}
+
         <button
           type="button"
           onClick={onNuevaConsulta}
@@ -381,6 +398,11 @@ export default function Step4ResultadoExpress() {
     resetWizard();
   };
 
+  // Navega al paso 5 de recopilacion de datos personales
+  const handleIniciarDatosPersonales = () => {
+    goToStep(5);
+  };
+
   if (isLoading) {
     return <LoadingView />;
   }
@@ -400,6 +422,7 @@ export default function Step4ResultadoExpress() {
       <ResultadoCard
         resultado={resultado}
         onNuevaConsulta={handleNuevaConsulta}
+        onIniciarDatosPersonales={handleIniciarDatosPersonales}
       />
     );
   }

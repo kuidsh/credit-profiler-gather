@@ -1,288 +1,319 @@
-# Deployment Guide – Perfilador Express
+# Deployment Guide — Perfilador Express
 
-Stack: **React + Vite** (frontend) + **Express** proxy server (backend) + **DeepSeek API**.
-
-The build produces static files (`dist/`) served by Nginx. The Express server (`server/index.cjs`) runs as a background process proxying `/api/analyze` to DeepSeek.
-
----
-
-## Part 1 — Amazon Linux EC2 (fresh instance)
-
-### 1. Connect to the instance
-
-```bash
-ssh -i your-key.pem ec2-user@<YOUR_EC2_PUBLIC_IP>
-```
-
-### 2. Update system and install Node.js 20
-
-```bash
-sudo dnf update -y
-curl -fsSL https://rpm.nodesource.com/setup_20.x | sudo bash -
-sudo dnf install -y nodejs git
-node -v   # should print v20.x.x
-```
-
-### 3. Install Nginx and PM2
-
-```bash
-sudo dnf install -y nginx
-sudo npm install -g pm2
-```
-
-### 4. Clone the repository
-
-```bash
-cd /home/ec2-user
-git clone https://github.com/<your-org>/PerfiladorCredito.git
-cd PerfiladorCredito
-```
-
-> If you don't have a GitHub repo yet, use `scp` or `rsync` to upload the project folder instead.
-
-### 5. Install dependencies
-
-```bash
-npm install
-```
-
-### 6. Create the environment file
-
-```bash
-nano .env.local
-```
-
-Paste and save:
+Production stack: **AWS Amplify** (frontend CDN) + **AWS Lambda + API Gateway** (Express backend via `serverless-http`) + **Aurora Serverless v2** (PostgreSQL) + **DeepSeek API** (LLM).
 
 ```
-DEEPSEEK_API_KEY=your-real-deepseek-api-key-here
-```
-
-### 7. Build the frontend
-
-```bash
-npm run build
-# Output goes to ./dist/
-```
-
-### 8. Configure Nginx
-
-```bash
-sudo nano /etc/nginx/conf.d/perfilador.conf
-```
-
-Paste:
-
-```nginx
-server {
-    listen 80;
-    server_name _;   # replace with your domain if you have one
-
-    # Serve the React build
-    root /home/ec2-user/PerfiladorCredito/dist;
-    index index.html;
-
-    # React Router: always serve index.html for unknown paths
-    location / {
-        try_files $uri $uri/ /index.html;
-    }
-
-    # Proxy API calls to the Express server
-    location /api/ {
-        proxy_pass         http://127.0.0.1:3001;
-        proxy_http_version 1.1;
-        proxy_set_header   Host $host;
-        proxy_set_header   X-Real-IP $remote_addr;
-        proxy_read_timeout 30s;
-    }
-}
-```
-
-Test and start Nginx:
-
-```bash
-sudo nginx -t
-sudo systemctl enable nginx
-sudo systemctl start nginx
-```
-
-### 9. Start the Express server with PM2
-
-```bash
-pm2 start server/index.cjs --name perfilador-api
-pm2 save
-pm2 startup   # copy & run the command it prints to auto-start on reboot
-```
-
-Check it's running:
-
-```bash
-pm2 status
-pm2 logs perfilador-api
-```
-
-### 10. Open firewall ports
-
-In the AWS console → EC2 → Security Groups → Inbound rules, add:
-
-| Type  | Port | Source    |
-|-------|------|-----------|
-| HTTP  | 80   | 0.0.0.0/0 |
-| HTTPS | 443  | 0.0.0.0/0 |
-
-The app is now live at `http://<YOUR_EC2_PUBLIC_IP>`.
-
-### Optional: HTTPS with Let's Encrypt
-
-```bash
-sudo dnf install -y certbot python3-certbot-nginx
-sudo certbot --nginx -d yourdomain.com
-sudo systemctl reload nginx
+GitHub push → Amplify build → CloudFront CDN  (frontend)
+                                  ↓
+                        user browser /api/*
+                                  ↓
+                     API Gateway → Lambda (Express server/index.cjs)
+                                  ↓
+                           DeepSeek API + Aurora PostgreSQL
 ```
 
 ---
 
-## Part 2 — Serverless on AWS (via GitHub)
+## Environment variables
 
-The cleanest serverless split is:
-- **Frontend** → **AWS Amplify Hosting** (auto-deploys from GitHub, serves the Vite build via CDN)
-- **Backend** → **AWS Lambda + API Gateway** (wraps the Express server using `serverless-http`)
+### Lambda (backend)
 
-### Step 1 — Prepare the Lambda wrapper
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `DEEPSEEK_API_KEY` | Yes | DeepSeek API key (`sk-...`) |
+| `DATABASE_URL` | Yes | Aurora PostgreSQL connection string |
+| `FRONTEND_ORIGIN` | Yes | Amplify frontend URL for CORS (e.g. `https://main.xxxx.amplifyapp.com`) |
 
-Install the adapter locally:
+### Amplify (frontend build)
 
-```bash
-npm install serverless-http
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `VITE_API_URL` | Yes | Base URL of the Lambda API Gateway — no trailing slash (e.g. `https://abc123.execute-api.us-east-1.amazonaws.com`) |
+
+---
+
+## Part 1 — AWS Amplify (frontend)
+
+Amplify auto-deploys the React + Vite frontend from GitHub on every push to `main`.
+
+### Setup
+
+1. Go to **AWS Amplify → New app → Host web app** → connect your GitHub repo.
+2. Amplify auto-detects Vite via `amplify.yml` in the project root (already committed):
+   ```yaml
+   version: 1
+   frontend:
+     phases:
+       preBuild:
+         commands:
+           - npm install        # also runs prisma generate via postinstall
+       build:
+         commands:
+           - npm run build
+     artifacts:
+       baseDirectory: dist
+       files:
+         - '**/*'
+     cache:
+       paths:
+         - node_modules/**/*
+   ```
+3. In **Environment variables**, add:
+   ```
+   VITE_API_URL = https://<api-id>.execute-api.<region>.amazonaws.com
+   ```
+4. Click **Save and deploy**.
+
+Amplify rebuilds on every push to `main` automatically. The `postinstall` hook runs `prisma generate` during the build — no manual step needed.
+
+---
+
+## Part 2 — AWS Lambda (backend)
+
+The Express server (`server/index.cjs`) is wrapped for Lambda by `server/lambda.cjs` using `serverless-http`.
+
+### Lambda configuration
+
+| Setting | Value |
+|---------|-------|
+| Runtime | Node.js 20.x |
+| Handler | `server/lambda.handler` |
+| Timeout | **30 seconds** (DeepSeek can take up to 25 s) |
+| Architecture | x86_64 |
+
+### Environment variables (Lambda)
+
+Set these in **Lambda → Configuration → Environment variables**:
+
+```
+DEEPSEEK_API_KEY   = sk-...
+DATABASE_URL       = postgresql://user:pass@cluster.rds.amazonaws.com:5432/perfilador
+FRONTEND_ORIGIN    = https://main.xxxx.amplifyapp.com
 ```
 
-Create `server/lambda.cjs`:
-
-```js
-'use strict';
-const serverless = require('serverless-http');
-// Re-use the existing Express app (export app before app.listen)
-const app = require('./app.cjs');   // see note below
-module.exports.handler = serverless(app);
-```
-
-> **Note:** Refactor `server/index.cjs` to export the `app` before calling `app.listen()`, so both the local server and Lambda can use the same Express instance:
->
-> ```js
-> // At the bottom of server/index.cjs — replace app.listen(...) with:
-> if (require.main === module) {
->   app.listen(PORT, () => console.log(`Listening on :${PORT}`));
-> }
-> module.exports = app;
-> ```
-
-### Step 2 — Install the Serverless Framework
-
-```bash
-npm install -g serverless
-```
-
-Create `serverless.yml` in the project root:
-
-```yaml
-service: perfilador-express
-
-provider:
-  name: aws
-  runtime: nodejs20.x
-  region: us-east-1          # change to your preferred region
-  environment:
-    DEEPSEEK_API_KEY: ${env:DEEPSEEK_API_KEY}
-
-functions:
-  api:
-    handler: server/lambda.handler
-    events:
-      - httpApi:
-          path: /api/{proxy+}
-          method: ANY
-
-package:
-  patterns:
-    - '!node_modules/.cache/**'
-    - '!src/**'
-    - '!dist/**'
-    - '!docs/**'
-    - '!public/**'
-    - '!.env*'
-```
-
-### Step 3 — Set the API key as an AWS secret
-
-Never commit the key. Store it in AWS Systems Manager Parameter Store:
+Store secrets in **AWS Systems Manager Parameter Store** and reference them via the Lambda execution role for better security:
 
 ```bash
 aws ssm put-parameter \
   --name "/perfilador/DEEPSEEK_API_KEY" \
-  --value "your-real-deepseek-api-key-here" \
+  --value "sk-..." \
   --type SecureString
 ```
 
-Then update `serverless.yml` to pull it:
+### API Gateway routes
 
-```yaml
-environment:
-  DEEPSEEK_API_KEY: ${ssm:/perfilador/DEEPSEEK_API_KEY}
-```
+All routes under `/api/*` must proxy to the Lambda function:
 
-### Step 4 — Deploy the Lambda
+| Method | Path | Description |
+|--------|------|-------------|
+| `POST` | `/api/analyze` | LLM proxy |
+| `POST` | `/api/iniciar-sesion` | Create draft session |
+| `PATCH` | `/api/sesion/{sesionId}` | Merge step data |
+| `POST` | `/api/guardar-sesion` | Finalize session after LLM |
+| `POST` | `/api/guardar-contacto` | Save Step 5 sub-step 1 |
+| `PUT` | `/api/guardar-perfil/{sesionId}` | Save Step 5 sub-steps 2+3 |
+| `GET` | `/api/clientes/recientes` | 10 most recent clients |
+| `GET` | `/api/clientes` | Search by phone |
+| `OPTIONS` | `/api/*` | CORS preflight |
 
-```bash
-serverless deploy
-```
+Configure an **HTTP API** (recommended) with a single catch-all route:
+- `ANY /{proxy+}` → Lambda integration
 
-Copy the **API Gateway URL** it prints (e.g. `https://abc123.execute-api.us-east-1.amazonaws.com`).
+### CORS
 
-### Step 5 — Deploy the frontend with AWS Amplify
+The Express server handles CORS headers for all responses. Ensure `FRONTEND_ORIGIN` is set correctly in Lambda env. For the API Gateway itself:
 
-1. Push the project to GitHub (make sure `.env.local` is in `.gitignore`).
-2. Go to **AWS Amplify** → **New app** → **Host web app** → connect your GitHub repo.
-3. Amplify auto-detects Vite. Confirm the build settings:
-   - Build command: `npm run build`
-   - Output directory: `dist`
-4. In **Environment variables**, add:
-   ```
-   VITE_API_URL = https://abc123.execute-api.us-east-1.amazonaws.com
-   ```
-5. Click **Save and deploy**.
-
-Amplify builds on every push to `main` automatically.
-
-### Step 6 — Point the frontend at the Lambda URL
-
-Update the API call in your frontend code to use the environment variable:
-
-```js
-const apiBase = import.meta.env.VITE_API_URL ?? '';
-const response = await fetch(`${apiBase}/api/analyze`, { ... });
-```
-
-### Step 7 — CORS update for production
-
-In `server/index.cjs`, allow the Amplify domain instead of localhost:
-
-```js
-const ALLOWED_ORIGIN = process.env.FRONTEND_ORIGIN ?? 'http://localhost:5173';
-res.setHeader('Access-Control-Allow-Origin', ALLOWED_ORIGIN);
-```
-
-Add `FRONTEND_ORIGIN=https://main.abc123.amplifyapp.com` to `serverless.yml` environment (or SSM).
+- **Allow origin**: your Amplify domain
+- **Allow methods**: `GET, POST, PUT, PATCH, OPTIONS`
+- **Allow headers**: `Content-Type`
 
 ---
 
-### Summary: Part 2 architecture
+## Part 3 — Aurora Serverless v2 (database)
+
+### Connection
+
+Use the Aurora cluster writer endpoint as `DATABASE_URL`:
 
 ```
-GitHub push → Amplify build → CloudFront CDN  (frontend)
-                                   ↓
-                         user browser /api/analyze
-                                   ↓
-                      API Gateway → Lambda (Express)
-                                   ↓
-                            DeepSeek API
+DATABASE_URL=postgresql://user:pass@cluster-writer.us-east-1.rds.amazonaws.com:5432/perfilador
 ```
+
+Ensure the Lambda security group has inbound access to the Aurora security group on port 5432.
+
+### Schema
+
+The production Prisma schema is at `prisma/schema.prisma` (PostgreSQL). It defines 4 models:
+
+| Model | Table | Created when |
+|-------|-------|-------------|
+| `SesionWizard` | `sesiones_wizard` | Step 1 advance (draft); finalized at Step 4 |
+| `PerfilCompleto` | `perfiles_completos` | Step 4 — Banco or Financiera only |
+| `DatosPersonalesPaso5` | `datos_personales_paso5` | Step 5 sub-step 1 (UPSERT) |
+| `InteraccionAnonima` | `interacciones_anonimas` | Step 4 — Subprime only (no PII) |
+
+### Initial setup (first deploy)
+
+```bash
+# Push schema to Aurora (creates all tables)
+npm run db:push:prod
+```
+
+### Migrations
+
+Production migrations live in `prisma/migrations/`. Apply them with:
+
+```bash
+npm run db:migrate:prod
+# runs: prisma migrate deploy
+```
+
+| Migration | Description |
+|-----------|-------------|
+| `001_fix_nullable_result_columns` | Drops NOT NULL on `clasificacion_recomendada`, `viabilidad_inicial`, `carga_financiera` — these are null until the LLM responds at Step 4 |
+
+> **Important:** if you used `prisma db push` to create the schema initially and these columns were created as NOT NULL, run the migration above before using Prisma Studio or the app will throw a type conversion error on existing rows.
+
+### Dev vs prod schemas
+
+| Schema file | Provider | Use case |
+|------------|---------|---------|
+| `prisma/schema.prisma` | PostgreSQL | Production (Aurora) |
+| `prisma/schema.dev.prisma` | SQLite | Local development |
+
+```bash
+# Local dev — sync after schema changes
+npm run db:setup          # generate + push to SQLite
+
+# Production — generate client
+npm run db:generate:prod  # generates from schema.prisma
+
+# Production — apply migrations
+npm run db:migrate:prod
+```
+
+---
+
+## Part 4 — Deploying code changes
+
+### Standard deploy (frontend + backend)
+
+1. Push to `main` → Amplify auto-builds and deploys the frontend.
+2. Upload the new Lambda ZIP or redeploy via your CI/CD pipeline.
+
+### Prisma schema changes
+
+1. Edit `prisma/schema.prisma`.
+2. Write a migration SQL in `prisma/migrations/<number>_<name>/migration.sql`.
+3. Test locally with `prisma/schema.dev.prisma`.
+4. Apply to Aurora: `npm run db:migrate:prod`.
+5. Redeploy Lambda (so it uses the updated Prisma client bundled at build time).
+
+### Lambda packaging
+
+The Lambda deployment package must include:
+- `server/index.cjs`
+- `server/lambda.cjs`
+- `server/db/client.cjs`
+- `node_modules/` (all runtime dependencies)
+- The generated Prisma client (`.prisma/client/` or `node_modules/.prisma/`)
+
+The `postinstall` script runs `prisma generate` automatically during `npm install`, so the generated client is always present after a fresh install.
+
+---
+
+## Part 5 — Local development (not deployed)
+
+```bash
+# Install (also runs prisma generate)
+npm install
+
+# Set up local env
+cp .env.local.example .env.local
+# Edit: DEEPSEEK_API_KEY=sk-...
+#       DATABASE_URL=file:./prisma/dev.db
+
+# Sync local SQLite DB
+npm run db:setup
+
+# Start frontend + backend
+npm run dev:full
+```
+
+The Vite dev server at `:5173` proxies `/api/*` to Express at `:3001`. No `VITE_API_URL` needed locally.
+
+```bash
+# Browse local data
+npm run db:studio
+```
+
+---
+
+## Verification
+
+After deployment, test the LLM proxy:
+
+```bash
+curl -X POST https://<api-gateway-url>/api/analyze \
+  -H "Content-Type: application/json" \
+  -d '{
+    "systemPrompt": "Eres un perfilador comercial. Responde solo con: Resultado express",
+    "userMessage": "Prueba de conectividad"
+  }'
+# Expected: { "text": "Resultado express" }
+```
+
+Test the session creation endpoint:
+
+```bash
+curl -X POST https://<api-gateway-url>/api/iniciar-sesion \
+  -H "Content-Type: application/json" \
+  -d '{
+    "ocupacion": "Empleado",
+    "antiguedad": 2,
+    "ingresoMensual": 25000,
+    "compruebaIngresos": "Si",
+    "tipoDomicilio": "Rentado"
+  }'
+# Expected: { "ok": true, "sesionId": "uuid-..." }
+```
+
+---
+
+## Troubleshooting
+
+### `Error converting field "clasificacionRecomendada" of expected non-nullable type`
+
+The Aurora column has a NOT NULL constraint but the schema declares it nullable. Fix:
+
+```bash
+npm run db:migrate:prod
+```
+
+Or apply the SQL manually via RDS Query Editor:
+
+```sql
+ALTER TABLE sesiones_wizard ALTER COLUMN clasificacion_recomendada DROP NOT NULL;
+ALTER TABLE sesiones_wizard ALTER COLUMN viabilidad_inicial DROP NOT NULL;
+ALTER TABLE sesiones_wizard ALTER COLUMN carga_financiera DROP NOT NULL;
+```
+
+### Prisma client out of date
+
+After any schema change or Lambda redeploy where `npm install` was not run:
+
+```bash
+npm run db:generate:prod
+```
+
+The `postinstall` script handles this automatically in Amplify builds and fresh Lambda installs.
+
+### Lambda timeout
+
+If the LLM call times out, the Lambda timeout must be ≥ 30 seconds. The frontend has an 18–25 s client-side timeout — the Lambda must be configured for at least 30 s to account for cold starts.
+
+### CORS errors in browser
+
+1. Verify `FRONTEND_ORIGIN` in Lambda env matches your exact Amplify URL.
+2. Verify the API Gateway CORS config allows the Amplify domain.
+3. Confirm the Lambda is returning `Access-Control-Allow-Origin` in responses (check CloudWatch logs).
