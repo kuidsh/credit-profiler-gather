@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Perfilador Express – Guía de Base de Datos</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f4f8;
+      color: #1a202c;
+      padding: 24px 16px;
+    }
+    .container { max-width: 900px; margin: 0 auto; }
+
+    header {
+      background: linear-gradient(135deg, #1a56db 0%, #0e3fa5 100%);
+      color: white;
+      border-radius: 16px;
+      padding: 32px 28px 24px;
+      margin-bottom: 28px;
+    }
+    header h1 { font-size: 1.6rem; font-weight: 700; margin-bottom: 6px; }
+    header p { font-size: 0.95rem; opacity: 0.85; }
+
+    /* SECTION TITLES */
+    .section-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #1a56db;
+      margin: 28px 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-title::before {
+      content: '';
+      display: inline-block;
+      width: 4px; height: 20px;
+      background: #1a56db;
+      border-radius: 4px;
+    }
+
+    /* GENERIC CARD */
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 18px 20px;
+      box-shadow: 0 1px 4px rgba(0,0,0,.07);
+    }
+
+    /* TOOLS GRID */
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 14px;
+    }
+    .tool-card {
+      background: white;
+      border-radius: 12px;
+      padding: 18px 18px;
+      box-shadow: 0 1px 4px rgba(0,0,0,.07);
+      border-top: 4px solid #1a56db;
+    }
+    .tool-card.green  { border-top-color: #10b981; }
+    .tool-card.amber  { border-top-color: #f59e0b; }
+    .tool-card .tool-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: #1a56db;
+      margin-bottom: 6px;
+    }
+    .tool-card.green .tool-label  { color: #059669; }
+    .tool-card.amber .tool-label  { color: #b45309; }
+    .tool-card h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 8px; }
+    .tool-card p  { font-size: 0.84rem; color: #374151; line-height: 1.5; }
+    .tool-card code {
+      display: inline-block;
+      font-family: 'Courier New', monospace;
+      font-size: 0.82rem;
+      background: #f1f5f9;
+      color: #1e40af;
+      border-radius: 5px;
+      padding: 2px 8px;
+      margin-top: 8px;
+      border: 1px solid #e2e8f0;
+    }
+
+    /* TABLE GRID 2x2 */
+    .tables-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+      gap: 14px;
+    }
+    .table-card {
+      background: white;
+      border-radius: 12px;
+      padding: 18px 20px;
+      box-shadow: 0 1px 4px rgba(0,0,0,.07);
+    }
+    .table-card.blue   { border-left: 5px solid #1a56db; }
+    .table-card.green  { border-left: 5px solid #10b981; }
+    .table-card.purple { border-left: 5px solid #7c3aed; }
+    .table-card.amber  { border-left: 5px solid #f59e0b; }
+
+    .table-card .table-name {
+      font-family: 'Courier New', monospace;
+      font-size: 0.88rem;
+      font-weight: 700;
+      background: #f1f5f9;
+      border-radius: 6px;
+      padding: 3px 10px;
+      display: inline-block;
+      margin-bottom: 8px;
+    }
+    .table-card.blue   .table-name { color: #1e40af; border: 1px solid #bfdbfe; }
+    .table-card.green  .table-name { color: #065f46; border: 1px solid #6ee7b7; background: #ecfdf5; }
+    .table-card.purple .table-name { color: #5b21b6; border: 1px solid #c4b5fd; background: #f5f3ff; }
+    .table-card.amber  .table-name { color: #78350f; border: 1px solid #fde68a; background: #fffbeb; }
+
+    .table-card .when-tag {
+      font-size: 0.73rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 999px;
+      margin-bottom: 10px;
+      display: inline-block;
+    }
+    .table-card.blue   .when-tag { background: #dbeafe; color: #1e40af; }
+    .table-card.green  .when-tag { background: #d1fae5; color: #065f46; }
+    .table-card.purple .when-tag { background: #ede9fe; color: #5b21b6; }
+    .table-card.amber  .when-tag { background: #fef9c3; color: #78350f; }
+
+    .table-card .fields-title {
+      font-size: 0.76rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: #6b7280;
+      margin: 10px 0 6px;
+    }
+    .table-card ul { list-style: none; }
+    .table-card ul li {
+      font-size: 0.82rem;
+      color: #374151;
+      padding: 3px 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+    }
+    .table-card ul li::before {
+      content: '›';
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 0;
+    }
+    .table-card.blue   ul li::before { color: #1a56db; }
+    .table-card.green  ul li::before { color: #10b981; }
+    .table-card.purple ul li::before { color: #7c3aed; }
+    .table-card.amber  ul li::before { color: #f59e0b; }
+
+    .field-code {
+      font-family: 'Courier New', monospace;
+      font-size: 0.79rem;
+      background: #f1f5f9;
+      border-radius: 3px;
+      padding: 0 4px;
+      color: #374151;
+    }
+
+    /* RELATION DIAGRAM */
+    .relation-diagram {
+      background: white;
+      border-radius: 12px;
+      padding: 24px 24px;
+      box-shadow: 0 1px 4px rgba(0,0,0,.07);
+    }
+    .rel-root {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0;
+    }
+    .rel-node {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      font-weight: 700;
+      padding: 7px 14px;
+      border-radius: 8px;
+      white-space: nowrap;
+    }
+    .rel-node.root   { background: #dbeafe; color: #1e40af; border: 1.5px solid #93c5fd; }
+    .rel-node.green  { background: #d1fae5; color: #065f46; border: 1.5px solid #6ee7b7; }
+    .rel-node.purple { background: #ede9fe; color: #5b21b6; border: 1.5px solid #c4b5fd; }
+    .rel-node.amber  { background: #fef9c3; color: #78350f; border: 1.5px solid #fde68a; }
+
+    .rel-branch {
+      display: flex;
+      flex-direction: column;
+      margin-left: 28px;
+      gap: 0;
+    }
+    .rel-line {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 5px 0;
+    }
+    .rel-connector {
+      font-family: 'Courier New', monospace;
+      font-size: 0.8rem;
+      color: #9ca3af;
+      flex-shrink: 0;
+      width: 22px;
+      text-align: center;
+    }
+    .rel-label {
+      font-size: 0.78rem;
+      color: #6b7280;
+      font-style: italic;
+      margin-left: 8px;
+    }
+    .rel-sub-branch {
+      margin-left: 48px;
+    }
+
+    /* COMMANDS TABLE */
+    .cmd-table {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,.07);
+    }
+    .cmd-table table { width: 100%; border-collapse: collapse; }
+    .cmd-table thead { background: #1a56db; color: white; }
+    .cmd-table thead th {
+      padding: 11px 16px;
+      font-size: 0.82rem;
+      text-align: left;
+      font-weight: 600;
+    }
+    .cmd-table tbody tr { border-bottom: 1px solid #f3f4f6; }
+    .cmd-table tbody tr:last-child { border-bottom: none; }
+    .cmd-table tbody tr:hover { background: #f9fafb; }
+    .cmd-table tbody td {
+      padding: 9px 16px;
+      font-size: 0.83rem;
+      vertical-align: middle;
+    }
+    .cmd-table tbody td:first-child {
+      font-family: 'Courier New', monospace;
+      font-size: 0.78rem;
+      background: #f8fafc;
+      color: #1e40af;
+      width: 52%;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .cmd-table tbody td:last-child {
+      color: #374151;
+    }
+
+    /* API TABLE */
+    .api-table {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,.07);
+    }
+    .api-table table { width: 100%; border-collapse: collapse; }
+    .api-table thead { background: #1a56db; color: white; }
+    .api-table thead th {
+      padding: 11px 16px;
+      font-size: 0.82rem;
+      text-align: left;
+      font-weight: 600;
+    }
+    .api-table tbody tr { border-bottom: 1px solid #f3f4f6; }
+    .api-table tbody tr:last-child { border-bottom: none; }
+    .api-table tbody tr:hover { background: #f9fafb; }
+    .api-table tbody td {
+      padding: 10px 16px;
+      font-size: 0.83rem;
+      vertical-align: middle;
+    }
+    .method-badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 5px;
+      background: #d1fae5;
+      color: #065f46;
+      font-family: 'Courier New', monospace;
+    }
+    .url-code {
+      font-family: 'Courier New', monospace;
+      font-size: 0.79rem;
+      color: #1e40af;
+      word-break: break-all;
+    }
+
+    /* PERSISTENCE STRATEGY */
+    .persist-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 14px;
+    }
+    .persist-card {
+      border-radius: 12px;
+      padding: 18px 20px;
+      box-shadow: 0 1px 4px rgba(0,0,0,.07);
+    }
+    .persist-card.completo  { background: #ecfdf5; border-left: 5px solid #10b981; }
+    .persist-card.anonimo   { background: #fffbeb; border-left: 5px solid #f59e0b; }
+    .persist-card .persist-trigger {
+      font-size: 0.73rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-bottom: 4px;
+    }
+    .persist-card.completo .persist-trigger { color: #059669; }
+    .persist-card.anonimo  .persist-trigger { color: #b45309; }
+    .persist-card .persist-rule {
+      font-size: 1.05rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+    .persist-card.completo .persist-rule { color: #065f46; }
+    .persist-card.anonimo  .persist-rule { color: #78350f; }
+    .persist-card ul { list-style: none; }
+    .persist-card ul li {
+      font-size: 0.83rem;
+      padding: 3px 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .persist-card.completo ul li { color: #065f46; }
+    .persist-card.anonimo  ul li { color: #78350f; }
+    .persist-card ul li::before { content: '→'; font-weight: 700; }
+    .persist-note {
+      font-size: 0.78rem;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(0,0,0,.08);
+      font-style: italic;
+    }
+    .persist-card.completo .persist-note { color: #047857; }
+    .persist-card.anonimo  .persist-note { color: #92400e; }
+
+    /* ENVIRONMENTS */
+    .env-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 14px;
+    }
+    .env-card {
+      background: white;
+      border-radius: 12px;
+      padding: 18px 20px;
+      box-shadow: 0 1px 4px rgba(0,0,0,.07);
+    }
+    .env-card .env-badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      padding: 3px 10px;
+      border-radius: 999px;
+      margin-bottom: 8px;
+    }
+    .env-card.dev  .env-badge { background: #dbeafe; color: #1e40af; }
+    .env-card.prod .env-badge { background: #fee2e2; color: #991b1b; }
+    .env-card h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 10px; }
+    .env-card ul { list-style: none; }
+    .env-card ul li {
+      font-size: 0.83rem;
+      color: #374151;
+      padding: 4px 0;
+      border-bottom: 1px solid #f3f4f6;
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+    }
+    .env-card ul li:last-child { border-bottom: none; }
+    .env-card ul li .li-key {
+      font-weight: 600;
+      min-width: 110px;
+      flex-shrink: 0;
+    }
+    .env-card ul li .li-val {
+      font-family: 'Courier New', monospace;
+      font-size: 0.79rem;
+      color: #1e40af;
+      word-break: break-all;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 0.78rem;
+      color: #6b7280;
+      margin-top: 36px;
+      padding-top: 16px;
+      border-top: 1px solid #e5e7eb;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <h1>Perfilador Express · Guía de Base de Datos</h1>
+    <p>Cómo consultar, revisar y depurar los datos del wizard en desarrollo local</p>
+  </header>
+
+  <!-- HERRAMIENTAS -->
+  <div class="section-title">Herramientas disponibles</div>
+  <div class="tools-grid">
+    <div class="tool-card">
+      <div class="tool-label">Recomendada</div>
+      <h3>Prisma Studio</h3>
+      <p>Interfaz visual en el navegador para ver, filtrar, editar y eliminar registros de todas las tablas. La opción más cómoda para desarrollo.</p>
+      <code>npm run db:studio</code>
+      <p style="margin-top:8px;font-size:0.79rem;color:#6b7280;">Abre en <strong>localhost:5555</strong></p>
+    </div>
+    <div class="tool-card green">
+      <div class="tool-label">SQL directo</div>
+      <h3>SQLite CLI</h3>
+      <p>Consultas SQL directas sobre el archivo <code style="background:#ecfdf5;border-color:#6ee7b7;color:#065f46;">prisma/dev.db</code>. En Windows también se puede usar <strong>DB Browser for SQLite</strong> (GUI gratuita, sin instalación de consola).</p>
+      <code>sqlite3 prisma/dev.db</code>
+    </div>
+    <div class="tool-card amber">
+      <div class="tool-label">HTTP</div>
+      <h3>API REST local</h3>
+      <p>Endpoints del servidor Express para consultar clientes directamente desde el navegador o Postman. El servidor debe estar corriendo.</p>
+      <code>npm run server</code>
+      <p style="margin-top:8px;font-size:0.79rem;color:#6b7280;">Puerto <strong>localhost:3001</strong></p>
+    </div>
+  </div>
+
+  <!-- LAS 4 TABLAS -->
+  <div class="section-title">Las 4 tablas</div>
+  <div class="tables-grid">
+
+    <div class="table-card blue">
+      <div class="table-name">sesiones_wizard</div><br/>
+      <span class="when-tag">Cada ejecución completa del Paso 4</span>
+      <div class="fields-title">Campos principales</div>
+      <ul>
+        <li><span class="field-code">id</span> — UUID, clave primaria</li>
+        <li><span class="field-code">sesionToken</span> — token único de sesión (64 chars)</li>
+        <li><span class="field-code">guardarCompleto</span> — true si Banco | Financiera</li>
+        <li><span class="field-code">clasificacionRecomendada</span> — Banco | Financiera | Subprime</li>
+        <li><span class="field-code">viabilidadInicial</span> — Alta | Media | Baja</li>
+        <li><span class="field-code">cargaFinanciera</span> — Cómoda | Justa | Apretada</li>
+        <li><span class="field-code">paso5ContactoGuardado</span> — true al guardar sub-paso 1</li>
+        <li><span class="field-code">paso5Completado</span> — true al terminar los 3 sub-pasos</li>
+        <li><span class="field-code">fuentePersistencia</span> — "completa" | "anonima"</li>
+        <li><span class="field-code">creadoEn</span> / <span class="field-code">actualizadoEn</span></li>
+      </ul>
+      <div class="fields-title" style="margin-top:12px;">Relaciones</div>
+      <ul>
+        <li>1:1 → <span class="field-code">perfiles_completos</span> (opcional)</li>
+        <li>1:1 → <span class="field-code">interacciones_anonimas</span> (opcional)</li>
+      </ul>
+    </div>
+
+    <div class="table-card green">
+      <div class="table-name">perfiles_completos</div><br/>
+      <span class="when-tag">Solo si clasificación = Banco o Financiera</span>
+      <div class="fields-title">Campos principales</div>
+      <ul>
+        <li><span class="field-code">sesionId</span> — FK a sesiones_wizard</li>
+        <li>16 variables del wizard (pasos 1–3) en campos individuales</li>
+        <li><span class="field-code">ocupacion</span>, <span class="field-code">ingresoMensual</span>, <span class="field-code">deudasMensuales</span>, <span class="field-code">enganche</span>…</li>
+        <li><span class="field-code">viabilidadInicial</span>, <span class="field-code">clasificacionRecomendada</span></li>
+        <li><span class="field-code">capacidadPago</span>, <span class="field-code">cargaFinanciera</span></li>
+        <li><span class="field-code">porQue</span>, <span class="field-code">fraseVendedor</span> — texto libre del LLM</li>
+        <li><span class="field-code">porcentajeCargaCalculado</span> — decimal calculado</li>
+      </ul>
+      <div class="fields-title" style="margin-top:12px;">Relaciones</div>
+      <ul>
+        <li>Pertenece a → <span class="field-code">sesiones_wizard</span></li>
+        <li>1:1 → <span class="field-code">datos_personales_paso5</span> (opcional)</li>
+      </ul>
+    </div>
+
+    <div class="table-card purple">
+      <div class="table-name">datos_personales_paso5</div><br/>
+      <span class="when-tag">Cuando usuario completa sub-paso 1 (Contacto)</span>
+      <div class="fields-title">Campos por sub-paso</div>
+      <ul>
+        <li><strong>Sub-paso 1 (siempre):</strong> <span class="field-code">nombres</span>, <span class="field-code">apellidoPaterno</span>, <span class="field-code">apellidoMaterno?</span>, <span class="field-code">telefonoCelular</span></li>
+        <li><strong>Sub-paso 2 (opcional):</strong> <span class="field-code">fechaNacimiento</span>, <span class="field-code">rfc?</span>, <span class="field-code">curp?</span>, <span class="field-code">genero</span>, <span class="field-code">estadoCivil</span>, <span class="field-code">correoElectronico</span></li>
+        <li><strong>Sub-paso 3 (opcional):</strong> <span class="field-code">calle</span>, <span class="field-code">colonia</span>, <span class="field-code">municipioDelegacion</span>, <span class="field-code">estadoRepublica</span>, <span class="field-code">codigoPostal</span></li>
+        <li><span class="field-code">subPasoCompletado</span> — 1 | 2 | 3</li>
+        <li><span class="field-code">completado</span> — true solo cuando los 3 sub-pasos son completos</li>
+      </ul>
+      <div class="fields-title" style="margin-top:12px;">Nota</div>
+      <ul>
+        <li>Contiene PII — sujeto a LFPDPPP. Nunca exponer en logs.</li>
+      </ul>
+    </div>
+
+    <div class="table-card amber">
+      <div class="table-name">interacciones_anonimas</div><br/>
+      <span class="when-tag">Solo si clasificación = Subprime</span>
+      <div class="fields-title">Campos principales</div>
+      <ul>
+        <li><span class="field-code">sesionId</span> — FK a sesiones_wizard</li>
+        <li>Solo campos categóricos: <span class="field-code">ocupacion</span>, <span class="field-code">compruebaIngresos</span>, <span class="field-code">historialCrediticio</span>, <span class="field-code">tipoUnidad</span>…</li>
+        <li><span class="field-code">rangosAntiguedad</span> — rango ("1-3 años"), nunca valor exacto</li>
+        <li><span class="field-code">rangoIngresos</span> — rango ("15k-25k"), nunca valor exacto</li>
+        <li><span class="field-code">rangoEnganche</span> — rango ("10-20%"), nunca valor exacto</li>
+        <li><span class="field-code">viabilidadInicial</span>, <span class="field-code">capacidadPago</span>, <span class="field-code">cargaFinanciera</span></li>
+      </ul>
+      <div class="fields-title" style="margin-top:12px;">Nota</div>
+      <ul>
+        <li>Sin PII, sin datos financieros exactos. Solo información categórica.</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- DIAGRAMA DE RELACIONES -->
+  <div class="section-title">Diagrama de relaciones</div>
+  <div class="relation-diagram">
+    <div class="rel-root">
+      <div class="rel-node root">sesiones_wizard</div>
+      <div class="rel-branch">
+        <div class="rel-line">
+          <span class="rel-connector">├──</span>
+          <div class="rel-node green">perfiles_completos</div>
+          <span class="rel-label">0..1 — solo si guardarCompleto = true (Banco | Financiera)</span>
+        </div>
+        <div class="rel-sub-branch">
+          <div class="rel-line">
+            <span class="rel-connector">└──</span>
+            <div class="rel-node purple">datos_personales_paso5</div>
+            <span class="rel-label">0..1 — solo si usuario completó sub-paso 1</span>
+          </div>
+        </div>
+        <div class="rel-line" style="margin-top:4px;">
+          <span class="rel-connector">└──</span>
+          <div class="rel-node amber">interacciones_anonimas</div>
+          <span class="rel-label">0..1 — solo si guardarCompleto = false (Subprime)</span>
+        </div>
+      </div>
+    </div>
+    <p style="margin-top:16px;font-size:0.8rem;color:#6b7280;">
+      Cada <strong>SesionWizard</strong> tiene exactamente una de las dos ramas activas: o bien
+      <em>perfiles_completos</em> (con posible <em>datos_personales_paso5</em>), o bien
+      <em>interacciones_anonimas</em> — nunca ambas.
+    </p>
+  </div>
+
+  <!-- COMANDOS ÚTILES -->
+  <div class="section-title">Comandos útiles</div>
+  <div class="cmd-table">
+    <table>
+      <thead>
+        <tr>
+          <th>Comando</th>
+          <th>Para qué sirve</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>npm run db:studio</td>
+          <td>Abre Prisma Studio en localhost:5555 (GUI visual recomendada)</td>
+        </tr>
+        <tr>
+          <td>npm run db:push</td>
+          <td>Aplica cambios del schema al archivo dev.db sin generar migración</td>
+        </tr>
+        <tr>
+          <td>npm run db:generate</td>
+          <td>Regenera el cliente Prisma en node_modules (correr tras cambiar schema)</td>
+        </tr>
+        <tr>
+          <td>sqlite3 prisma/dev.db</td>
+          <td>Abre la consola SQLite interactiva sobre la base de datos local</td>
+        </tr>
+        <tr>
+          <td>.tables</td>
+          <td>Lista todas las tablas (dentro del CLI de SQLite)</td>
+        </tr>
+        <tr>
+          <td>.schema sesiones_wizard</td>
+          <td>Muestra el DDL completo de la tabla (dentro del CLI de SQLite)</td>
+        </tr>
+        <tr>
+          <td>SELECT * FROM sesiones_wizard ORDER BY "creadoEn" DESC LIMIT 10;</td>
+          <td>Las 10 sesiones más recientes</td>
+        </tr>
+        <tr>
+          <td>SELECT * FROM perfiles_completos ORDER BY "creadoEn" DESC LIMIT 5;</td>
+          <td>Los 5 perfiles completos más recientes (Banco / Financiera)</td>
+        </tr>
+        <tr>
+          <td>SELECT * FROM datos_personales_paso5 ORDER BY "creadoEn" DESC LIMIT 5;</td>
+          <td>Los 5 registros de datos personales más recientes</td>
+        </tr>
+        <tr>
+          <td>SELECT * FROM interacciones_anonimas ORDER BY "creadoEn" DESC LIMIT 5;</td>
+          <td>Las 5 interacciones anónimas más recientes (Subprime)</td>
+        </tr>
+        <tr>
+          <td>DELETE FROM datos_personales_paso5 WHERE id='...';</td>
+          <td>Eliminar un registro de datos personales por ID (útil en pruebas)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- API ENDPOINTS -->
+  <div class="section-title">Endpoints API para revisar datos</div>
+  <div class="api-table">
+    <table>
+      <thead>
+        <tr>
+          <th>Método</th>
+          <th>URL</th>
+          <th>Descripción</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="method-badge">GET</span></td>
+          <td><span class="url-code">http://localhost:3001/api/clientes/recientes</span></td>
+          <td>Retorna los 10 clientes más recientes de datos_personales_paso5</td>
+        </tr>
+        <tr>
+          <td><span class="method-badge">GET</span></td>
+          <td><span class="url-code">http://localhost:3001/api/clientes?telefono=XXXXXXXXXX</span></td>
+          <td>Busca un cliente por número de teléfono celular exacto</td>
+        </tr>
+        <tr>
+          <td><span class="method-badge">POST</span></td>
+          <td><span class="url-code">http://localhost:3001/api/guardar-contacto</span></td>
+          <td>Crea o actualiza (UPSERT) el contacto del sub-paso 1 del Paso 5</td>
+        </tr>
+        <tr>
+          <td><span class="method-badge" style="background:#dbeafe;color:#1e40af;">PUT</span></td>
+          <td><span class="url-code">http://localhost:3001/api/guardar-perfil/:sesionId</span></td>
+          <td>Actualiza el perfil con los datos de los sub-pasos 2 y 3 del Paso 5</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ESTRATEGIA DE PERSISTENCIA -->
+  <div class="section-title">Estrategia de persistencia</div>
+  <div class="persist-grid">
+    <div class="persist-card completo">
+      <div class="persist-trigger">Clasificación</div>
+      <div class="persist-rule">Banco o Financiera</div>
+      <ul>
+        <li><code style="font-family:'Courier New',monospace;font-size:0.78rem;background:rgba(255,255,255,.6);padding:1px 5px;border-radius:3px;">guardarCompleto = true</code></li>
+        <li>sesiones_wizard (siempre)</li>
+        <li>perfiles_completos (con las 16 variables + resultado LLM)</li>
+        <li>datos_personales_paso5 (si el usuario avanza al Paso 5)</li>
+      </ul>
+      <div class="persist-note">
+        Guardado progresivo: sub-paso 1 se guarda inmediatamente via
+        POST /api/guardar-contacto para no perder el contacto si el usuario abandona.
+      </div>
+    </div>
+    <div class="persist-card anonimo">
+      <div class="persist-trigger">Clasificación</div>
+      <div class="persist-rule">Subprime</div>
+      <ul>
+        <li><code style="font-family:'Courier New',monospace;font-size:0.78rem;background:rgba(255,255,255,.6);padding:1px 5px;border-radius:3px;">guardarCompleto = false</code></li>
+        <li>sesiones_wizard (siempre)</li>
+        <li>interacciones_anonimas (solo rangos, sin PII, sin valores exactos)</li>
+      </ul>
+      <div class="persist-note">
+        NO se crea perfil_completo ni se solicitan datos personales.
+        El Paso 5 no se muestra al vendedor cuando la clasificación es Subprime.
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTA SOBRE ENTORNOS -->
+  <div class="section-title">Nota sobre entornos</div>
+  <div class="env-grid">
+    <div class="env-card dev">
+      <span class="env-badge">Dev local</span>
+      <h3>SQLite</h3>
+      <ul>
+        <li><span class="li-key">Archivo:</span><span class="li-val">prisma/dev.db</span></li>
+        <li><span class="li-key">Schema:</span><span class="li-val">prisma/schema.dev.prisma</span></li>
+        <li><span class="li-key">Proveedor:</span><span class="li-val">sqlite</span></li>
+        <li><span class="li-key">Migrations:</span><span class="li-val">db push (sin archivos de migración)</span></li>
+        <li><span class="li-key">Requisitos:</span><span class="li-val">Solo Node.js — sin Docker ni servidor externo</span></li>
+      </ul>
+    </div>
+    <div class="env-card prod">
+      <span class="env-badge">Producción (AWS)</span>
+      <h3>PostgreSQL Aurora Serverless v2</h3>
+      <ul>
+        <li><span class="li-key">Schema:</span><span class="li-val">prisma/schema.prisma</span></li>
+        <li><span class="li-key">Proveedor:</span><span class="li-val">postgresql</span></li>
+        <li><span class="li-key">Conexión:</span><span class="li-val">DATABASE_URL en Amplify env vars</span></li>
+        <li><span class="li-key">Migrations:</span><span class="li-val">prisma migrate deploy (en CI/CD)</span></li>
+        <li><span class="li-key">Desplegado via:</span><span class="li-val">AWS Amplify + serverless-http (Lambda)</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <footer>
+    Perfilador Express · Base de Datos · SQLite (dev) / PostgreSQL Aurora Serverless v2 (prod) · v2.0 · 2026
+  </footer>
+
+</div>
+</body>
+</html>

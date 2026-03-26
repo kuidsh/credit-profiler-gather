@@ -18,7 +18,23 @@
       "Bash(winget install:*)",
       "Bash(choco install:*)",
       "Bash(scoop install:*)",
-      "Bash(node -e \":*)"
+      "Bash(node -e \":*)",
+      "Bash(bash \"C:/Users/david/.claude/skills/here-now/scripts/publish.sh\" viabilidad-guia.html --client claude-code)",
+      "Bash(node -e \"require\\(''''@prisma/client''''\\)\")",
+      "Bash(npx prisma:*)",
+      "Bash(DATABASE_URL=\"file:./prisma/dev.db\" npx prisma db push --schema=prisma/schema.dev.prisma)",
+      "Bash(timeout 5 node server/index.cjs)",
+      "Bash(bash \"C:/Users/david/.claude/skills/here-now/scripts/publish.sh\" db-guia.html --client claude-code)",
+      "Bash(ls D:/Kuidsh/Workspace/credit-profiler-gather/.env*)",
+      "Bash(npm run:*)",
+      "Bash(tasklist)",
+      "Bash(node server/test-api.cjs)",
+      "Bash(python3 /tmp/gen_excalidraw.py)",
+      "Bash(python3 gen_excalidraw.py)",
+      "Bash(python3 -c \":*)"
+    ],
+    "additionalDirectories": [
+      "\\tmp"
     ]
   }
 }

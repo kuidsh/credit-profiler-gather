@@ -1,0 +1,16 @@
+{
+  "publishes": {
+    "regal-desert-dmpq": {
+      "siteUrl": "https://regal-desert-dmpq.here.now/",
+      "claimToken": "b1f09b53545245c05576360dd0c410fb953f78e7f8d60bb09e8965d6f66b6865",
+      "claimUrl": "https://here.now/claim?slug=regal-desert-dmpq&token=b1f09b53545245c05576360dd0c410fb953f78e7f8d60bb09e8965d6f66b6865",
+      "expiresAt": "2026-03-26T16:31:37.789Z"
+    },
+    "bold-quarry-svqh": {
+      "siteUrl": "https://bold-quarry-svqh.here.now/",
+      "claimToken": "2594c0e5a5658d06689ece8fce849e30b7e982dc6850063250b805bd17e618fc",
+      "claimUrl": "https://here.now/claim?slug=bold-quarry-svqh&token=2594c0e5a5658d06689ece8fce849e30b7e982dc6850063250b805bd17e618fc",
+      "expiresAt": "2026-03-26T21:13:24.266Z"
+    }
+  }
+}

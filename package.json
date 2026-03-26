@@ -8,9 +8,19 @@
     "build": "vite build",
     "preview": "vite preview",
     "server": "node server/index.cjs",
-    "dev:full": "concurrently \"npm run dev\" \"npm run server\""
+    "dev:full": "concurrently \"npm run dev\" \"npm run server\"",
+    "postinstall": "prisma generate",
+    "db:generate": "prisma generate --schema=prisma/schema.dev.prisma",
+    "db:push": "prisma db push --schema=prisma/schema.dev.prisma",
+    "db:studio": "prisma studio --schema=prisma/schema.dev.prisma",
+    "db:setup": "npm run db:generate && npm run db:push",
+    "db:generate:prod": "prisma generate",
+    "db:push:prod": "prisma db push",
+    "db:studio:prod": "prisma studio",
+    "db:migrate:prod": "prisma migrate deploy"
   },
   "dependencies": {
+    "@prisma/client": "^6.5.0",
     "dotenv": "^16.4.5",
     "express": "^4.18.2",
     "react": "^19.0.0",
@@ -23,6 +33,7 @@
     "autoprefixer": "^10.4.20",
     "concurrently": "^8.2.2",
     "postcss": "^8.5.2",
+    "prisma": "^6.5.0",
     "tailwindcss": "^3.4.17",
     "vite": "^6.1.0"
   }

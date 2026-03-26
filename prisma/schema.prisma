@@ -34,11 +34,13 @@ model SesionWizard {
   actualizadoEn            DateTime @updatedAt
   paso5ContactoGuardado    Boolean  @default(false) // true cuando sub-paso 1 (Contacto) es guardado
   paso5Completado          Boolean  @default(false) // true cuando los 3 sub-pasos del Paso 5 son completados
-  guardarCompleto          Boolean  // true si clasificacion = Banco | Financiera
-  clasificacionRecomendada String   @db.VarChar(20) // "Banco" | "Financiera" | "Subprime"
-  viabilidadInicial        String   @db.VarChar(10) // "Alta" | "Media" | "Baja"
-  cargaFinanciera          String   @db.VarChar(15) // "Cómoda" | "Justa" | "Apretada"
-  fuentePersistencia       String   @db.VarChar(20) // "completa" | "anonima"
+  pasoActual               Int      @default(1)     // paso del wizard donde se encuentra la sesión (1-4)
+  guardarCompleto          Boolean  @default(false) // true si clasificacion = Banco | Financiera
+  clasificacionRecomendada String?  @db.VarChar(20) // "Banco" | "Financiera" | "Subprime" — null hasta Step 4
+  viabilidadInicial        String?  @db.VarChar(10) // "Alta" | "Media" | "Baja" — null hasta Step 4
+  cargaFinanciera          String?  @db.VarChar(15) // "Cómoda" | "Justa" | "Apretada" — null hasta Step 4
+  fuentePersistencia       String   @default("borrador") @db.VarChar(20) // "borrador" | "completa" | "anonima"
+  datosWizardJson          String?  @db.Text        // JSON temporal con los datos del wizard acumulados por paso
 
   // Relaciones
   perfilCompleto     PerfilCompleto?
@@ -96,6 +98,7 @@ model PerfilCompleto {
   fraseVendedor              String  @db.Text
   advertenciaComercial       String  @db.Text
   porcentajeCargaCalculado   Decimal @db.Decimal(5, 2)
+  resultadoLlmJson           String? @db.Text           // JSON completo de la respuesta LLM
 
   datosPersonales DatosPersonalesPaso5?
 

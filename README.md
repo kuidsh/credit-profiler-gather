@@ -1,5 +1,7 @@
 # Perfilador Express de Orientación Comercial para Crédito Automotriz
 
+despliegue en prod: https://main.d2t2etx0403nnk.amplifyapp.com/paso-1
+
 Herramienta interna para asesores de piso en agencias y lotes de autos en México. Permite perfilar rápidamente a un cliente para orientar la gestión comercial de un crédito automotriz. **No aprueba créditos — es una guía comercial.**
 
 ## Stack
@@ -13,11 +15,14 @@ Herramienta interna para asesores de piso en agencias y lotes de autos en Méxic
 ## Desarrollo local
 
 ```bash
-# Instalar dependencias
+# Instalar dependencias (también ejecuta prisma generate vía postinstall)
 npm install
 
-# Copiar variables de entorno
-cp .env.example .env   # Agrega tu API key y DATABASE_URL al .env
+# Crear archivo de variables de entorno local
+cp .env.local.example .env.local   # Agrega tu DEEPSEEK_API_KEY
+
+# Sincronizar la base de datos SQLite de desarrollo
+npm run db:setup
 
 # Iniciar frontend + proxy en paralelo
 npm run dev:full
@@ -31,34 +36,41 @@ La variable `VITE_API_URL` no se necesita en desarrollo — Vite redirige `/api`
 
 ## Variables de entorno
 
-| Variable | Descripción |
-|----------|-------------|
-| `LLM_API_KEY` | API key del proveedor LLM (usada solo en el servidor) |
-| `DATABASE_URL` | Cadena de conexión a la base de datos (PostgreSQL o SQLite) |
-| `VITE_API_URL` | URL base del API Gateway en producción (ej. `https://xxx.execute-api.us-east-1.amazonaws.com/prod`) |
+| Variable | Dónde | Descripción |
+|----------|-------|-------------|
+| `DEEPSEEK_API_KEY` | `.env.local` / Lambda env | API key de DeepSeek (`sk-...`) |
+| `DATABASE_URL` | `.env.local` / Lambda env | Cadena de conexión PostgreSQL o SQLite |
+| `FRONTEND_ORIGIN` | Lambda env | URL de Amplify para CORS (`https://main.xxxx.amplifyapp.com`) |
+| `VITE_API_URL` | Amplify env vars | URL base del API Gateway en producción (sin `/` final) |
 
 ### DATABASE_URL según entorno
 
 ```bash
-# SQLite (dev local sin Docker)
+# SQLite (dev local — usa schema.dev.prisma)
 DATABASE_URL="file:./prisma/dev.db"
 
-# PostgreSQL local con Docker
-DATABASE_URL="postgresql://postgres:password@localhost:5432/perfilador_dev"
-
-# Aurora Serverless v2 (producción)
+# Aurora Serverless v2 (producción — usa schema.prisma)
 DATABASE_URL="postgresql://user:pass@cluster.us-east-1.rds.amazonaws.com:5432/perfilador_prod"
 ```
 
 ## Flujo de la aplicación
 
 ```
-Wizard (5 pasos) → promptBuilder → Proxy /api/analyze → LLM → responseParser → ResultadoExpress
-                                                                                       ↓ (si Banco o Financiera)
-                                                                               Step5 mini-wizard (3 sub-pasos)
-                                                                                       ↓
-                                                                        POST /api/guardar-contacto (sub-paso 1)
-                                                                        PUT  /api/guardar-perfil/:sesionId (sub-paso 3)
+Paso 1 avanza → POST /api/iniciar-sesion ──────────────────────────────────┐
+Paso 2 avanza → PATCH /api/sesion/:sesionId ───────────────────────────── SesionWizard (borrador)
+Paso 3 analiza → PATCH /api/sesion/:sesionId ──────────────────────────── pasoActual: 1→2→3
+       │
+       └─ promptBuilder → Proxy /api/analyze → LLM → responseParser → ResultadoExpress
+                                                                              │
+                                                           POST /api/guardar-sesion (con sesionId)
+                                                                              │
+                                                   SesionWizard finalizada + PerfilCompleto | InteraccionAnonima
+                                                                              │
+                                                                    (si Banco o Financiera)
+                                                                    Step5 mini-wizard (3 sub-pasos)
+                                                                              │
+                                                           POST /api/guardar-contacto (sub-paso 1)
+                                                           PUT  /api/guardar-perfil/:sesionId (sub-paso 3)
 ```
 
 ### Pasos del wizard
@@ -91,13 +103,27 @@ Disponible en `/clientes`. Accesible desde Step 1 y desde el sub-paso 1 del Step
 
 ## Estrategia de persistencia
 
+### Guardado progresivo (Pasos 1–3)
+
+| Evento | Endpoint | Resultado |
+|--------|----------|-----------|
+| Paso 1 → avanzar | `POST /api/iniciar-sesion` | Crea `SesionWizard` borrador, devuelve `sesionId` |
+| Paso 2 → avanzar | `PATCH /api/sesion/:sesionId` | Merge de datos en `datosWizardJson`, `pasoActual: 2` |
+| Paso 3 → analizar | `PATCH /api/sesion/:sesionId` | Merge de datos en `datosWizardJson`, `pasoActual: 3` |
+
+### Finalización (Paso 4 — respuesta del LLM)
+
 ```
 clasificacionRecomendada = Banco | Financiera  →  guardarCompleto = true
-                                                   Persiste: sesion + perfil completo + datos personales
+                                                   Actualiza: sesiones_wizard (pasoActual: 4)
+                                                   Crea: perfiles_completos + (luego) datos_personales_paso5
 
 clasificacionRecomendada = Subprime            →  guardarCompleto = false
-                                                   Persiste: solo interacción anonimizada (sin PII ni datos financieros exactos)
+                                                   Actualiza: sesiones_wizard (pasoActual: 4)
+                                                   Crea: interacciones_anonimas (sin PII ni cifras exactas)
 ```
+
+`guardarCompleto` se recalcula siempre en el servidor — nunca desde el cliente.
 
 ## Clasificación de canal
 
@@ -146,8 +172,7 @@ src/
 │   └── ui/                       # Button, Card, Select, InputNumber, Alert, ...
 ├── context/WizardContext.jsx      # Estado global: 16 variables + datosPersonales + navegación
 ├── hooks/
-│   ├── usePerfilador.js           # Llamada al proxy LLM, timeout, manejo de errores
-│   └── useGuardarPerfil.js        # POST/PUT para persistir datos personales (TODO: implementar)
+│   └── usePerfilador.js           # Llamada al proxy LLM, timeout, persistencia post-LLM
 ├── pages/
 │   └── ClientesHistoricos.jsx     # Búsqueda y listado de clientes históricos
 ├── steps/
@@ -161,17 +186,16 @@ src/
     └── responseParser.js          # Parsea respuesta del LLM a objeto JS
 
 server/
-├── index.cjs                      # Express proxy + endpoints API
+├── index.cjs                      # Express proxy + todos los endpoints API
 ├── lambda.cjs                     # Handler para AWS Lambda
-└── db/                            # (TODO) Capa de datos Prisma
-    ├── client.cjs                 # Singleton PrismaClient
-    ├── guardarPerfil.cjs          # Transacción principal de persistencia
-    ├── calcularCarga.cjs          # Función pura: % carga financiera
-    └── anonimizar.cjs             # Rangos para interacciones_anonimas
+├── test-api.cjs                   # Suite de integración: verifica persistencia de todos los pasos
+└── db/
+    └── client.cjs                 # Singleton PrismaClient (global.__prisma, safe for Lambda)
 
 prisma/
-├── schema.prisma                  # Schema Prisma (4 modelos)
-└── migrations/                    # Generado por `prisma migrate dev`
+├── schema.prisma                  # Schema Prisma PostgreSQL (producción, 4 modelos)
+├── schema.dev.prisma              # Schema Prisma SQLite (desarrollo local)
+└── dev.db                         # Base de datos SQLite local (git-ignored)
 
 docs/
 ├── 01-funcional.md                # Especificación funcional completa
@@ -186,12 +210,37 @@ docs/
 
 ## Base de datos — Modelos Prisma
 
-| Modelo | Tabla | Descripción |
-|--------|-------|-------------|
-| `SesionWizard` | `sesiones_wizard` | Raíz de cada ejecución del wizard |
-| `PerfilCompleto` | `perfiles_completos` | Datos completos (solo Banco/Financiera) |
-| `DatosPersonalesPaso5` | `datos_personales_paso5` | PII del Step 5 con guardado progresivo |
-| `InteraccionAnonima` | `interacciones_anonimas` | Solo metadatos categóricos (Subprime) |
+| Modelo | Tabla | Cuándo se crea |
+|--------|-------|----------------|
+| `SesionWizard` | `sesiones_wizard` | Al avanzar del Paso 1 (borrador); se finaliza en Paso 4 |
+| `PerfilCompleto` | `perfiles_completos` | Solo Banco/Financiera, al recibir resultado del LLM |
+| `DatosPersonalesPaso5` | `datos_personales_paso5` | Al completar sub-paso 1 del Step 5 (UPSERT) |
+| `InteraccionAnonima` | `interacciones_anonimas` | Solo Subprime, al recibir resultado del LLM |
+
+`PerfilCompleto` incluye el campo `resultadoLlmJson (Text, nullable)` que almacena el objeto completo de la respuesta del LLM como JSON, además de los campos individuales (`porQue`, `recomendacionesAccionables`, `fraseVendedor`, etc.).
+
+### Schemas
+
+- `prisma/schema.prisma` — PostgreSQL (producción)
+- `prisma/schema.dev.prisma` — SQLite (desarrollo local)
+
+```bash
+# Regenerar client + sincronizar DB local tras cambios de schema
+npm run db:setup
+
+# O por separado:
+npm run db:generate   # regenerar PrismaClient (SQLite)
+npm run db:push       # push schema → SQLite
+
+# Ver datos en Prisma Studio (local)
+npm run db:studio
+
+# Producción (Aurora)
+npm run db:generate:prod   # regenerar PrismaClient (PostgreSQL)
+npm run db:push:prod       # push schema → Aurora (dev/staging)
+npm run db:migrate:prod    # aplicar migraciones en Aurora (producción)
+npm run db:studio:prod     # Prisma Studio contra Aurora
+```
 
 ## Reglas de negocio importantes
 
@@ -200,3 +249,20 @@ docs/
 - El **historial crediticio** es dato referencial — no es el factor decisivo único.
 - Nunca se mencionan bancos, financieras ni SOFOM específicas en el output.
 - Los datos del **Step 5 están sujetos a la LFPDPPP** — incluir aviso de privacidad antes del formulario.
+
+## Migraciones de base de datos
+
+Las migraciones SQL para producción (Aurora) viven en `prisma/migrations/`. Aplicarlas con:
+
+```bash
+npm run db:migrate:prod
+```
+
+| Migración | Descripción |
+|-----------|-------------|
+| `001_fix_nullable_result_columns` | Elimina restricción NOT NULL en `clasificacion_recomendada`, `viabilidad_inicial` y `carga_financiera` — estas columnas son null hasta que el LLM responde en Step 4 |
+| `002_add_resultado_llm_json` | Agrega columna `resultado_llm_json TEXT` nullable en `perfiles_completos` para almacenar el objeto completo de la respuesta del LLM como JSON |
+
+## Despliegue
+
+Ver [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) para la guía completa de AWS Amplify + Lambda + Aurora.

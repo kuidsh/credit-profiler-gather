@@ -103,16 +103,24 @@ function ClasificacionBadge({ clasificacion }) {
 /**
  * Tarjeta de un cliente individual en la lista.
  * Al hacer clic ejecuta onSeleccionar(cliente).
+ * cargandoId: id del cliente que se esta cargando actualmente (deshabilita otras tarjetas)
  */
-function ClienteCard({ cliente, onSeleccionar }) {
+function ClienteCard({ cliente, onSeleccionar, cargandoId }) {
+  const esCargando = cargandoId === cliente.id
+  const deshabilitado = cargandoId !== null && !esCargando
+
   return (
     <button
       type="button"
-      onClick={() => onSeleccionar(cliente)}
-      className="w-full text-left bg-white rounded-xl border border-gray-200 shadow-sm
-        px-4 py-4 flex flex-col gap-2
-        hover:border-brand-400 hover:shadow-md active:bg-brand-50
-        transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-brand-500"
+      onClick={() => !cargandoId && onSeleccionar(cliente)}
+      disabled={deshabilitado}
+      className={[
+        'w-full text-left bg-white rounded-xl border border-gray-200 shadow-sm',
+        'px-4 py-4 flex flex-col gap-2',
+        'hover:border-brand-400 hover:shadow-md active:bg-brand-50',
+        'transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-brand-500',
+        deshabilitado ? 'opacity-50 cursor-not-allowed' : '',
+      ].join(' ')}
       aria-label={`Seleccionar cliente ${nombreCompleto(cliente)}`}
     >
       {/* Fila superior: nombre + badge */}
@@ -125,14 +133,18 @@ function ClienteCard({ cliente, onSeleccionar }) {
         )}
       </div>
 
-      {/* Fila inferior: telefono + fecha */}
+      {/* Fila inferior: telefono + fecha / indicador de carga */}
       <div className="flex items-center justify-between gap-2">
         <p className="text-sm text-gray-500 tabular-nums">
           {cliente.telefonoCelular || '—'}
         </p>
-        <p className="text-xs text-gray-400">
-          {formatearFecha(cliente.fechaRegistro)}
-        </p>
+        {esCargando ? (
+          <p className="text-xs text-brand-600 font-medium">Cargando...</p>
+        ) : (
+          <p className="text-xs text-gray-400">
+            {formatearFecha(cliente.creadoEn)}
+          </p>
+        )}
       </div>
     </button>
   )
@@ -141,10 +153,10 @@ function ClienteCard({ cliente, onSeleccionar }) {
 /**
  * Seccion de busqueda por telefono.
  */
-function SeccionBusqueda({ onSeleccionar }) {
+function SeccionBusqueda({ onSeleccionar, cargandoId }) {
   const [telefono, setTelefono] = useState('')
   const [cargando, setCargando] = useState(false)
-  const [resultado, setResultado] = useState(null)   // null | cliente | 'vacio' | 'error'
+  const [resultado, setResultado] = useState(null)   // null | ClienteObject[] | 'vacio' | 'error'
   const [mensajeError, setMensajeError] = useState('')
   const inputRef = useRef(null)
 
@@ -175,12 +187,11 @@ function SeccionBusqueda({ onSeleccionar }) {
 
       const data = await resp.json()
 
-      // El backend puede devolver un objeto o un array de un elemento
-      const cliente = Array.isArray(data) ? data[0] : data
-      if (!cliente) {
+      const lista = Array.isArray(data.clientes) ? data.clientes : []
+      if (lista.length === 0) {
         setResultado('vacio')
       } else {
-        setResultado(cliente)
+        setResultado(lista)
       }
     } catch (err) {
       setResultado('error')
@@ -242,7 +253,7 @@ function SeccionBusqueda({ onSeleccionar }) {
 
       {!cargando && resultado === 'vacio' && (
         <p className="mt-3 text-sm text-gray-500 bg-gray-50 rounded-xl px-4 py-3 border border-gray-200">
-          No se encontro ningun cliente con ese telefono.
+          No existen registros
         </p>
       )}
 
@@ -252,10 +263,16 @@ function SeccionBusqueda({ onSeleccionar }) {
         </p>
       )}
 
-      {!cargando && resultado && resultado !== 'vacio' && resultado !== 'error' && (
+      {!cargando && Array.isArray(resultado) && resultado.length > 0 && (
         <div className="mt-3">
-          <p className="text-xs text-gray-400 mb-2">Cliente encontrado — haz clic para usar sus datos:</p>
-          <ClienteCard cliente={resultado} onSeleccionar={onSeleccionar} />
+          <p className="text-xs text-gray-400 mb-2">
+            {resultado.length === 1 ? 'Cliente encontrado' : `${resultado.length} clientes encontrados`} — haz clic para usar sus datos:
+          </p>
+          <div className="flex flex-col gap-3">
+            {resultado.map((c, idx) => (
+              <ClienteCard key={c.id || idx} cliente={c} onSeleccionar={onSeleccionar} cargandoId={cargandoId} />
+            ))}
+          </div>
         </div>
       )}
     </section>
@@ -265,7 +282,7 @@ function SeccionBusqueda({ onSeleccionar }) {
 /**
  * Seccion de lista de clientes recientes.
  */
-function SeccionRecientes({ onSeleccionar }) {
+function SeccionRecientes({ onSeleccionar, cargandoId }) {
   const [clientes, setClientes] = useState([])
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState(null)
@@ -329,9 +346,10 @@ function SeccionRecientes({ onSeleccionar }) {
         <div className="flex flex-col gap-3">
           {clientes.map((cliente, idx) => (
             <ClienteCard
-              key={cliente.telefonoCelular ? `${cliente.telefonoCelular}-${idx}` : idx}
+              key={cliente.id || (cliente.telefonoCelular ? `${cliente.telefonoCelular}-${idx}` : idx)}
               cliente={cliente}
               onSeleccionar={onSeleccionar}
+              cargandoId={cargandoId}
             />
           ))}
         </div>
@@ -347,21 +365,39 @@ function SeccionRecientes({ onSeleccionar }) {
 export default function ClientesHistoricos() {
   const navigate = useNavigate()
   const { setDatosPersonales } = useWizard()
+  const [cargandoSeleccion, setCargandoSeleccion] = useState(null)
 
   /**
    * Al seleccionar un cliente:
-   * 1. Pre-llena sub-paso 1 de Step5 en el contexto (marcado como parcial)
-   * 2. Navega a /paso-5 para que el vendedor continue desde ese punto
+   * 1. Intenta cargar el registro completo via GET /api/clientes/:id
+   * 2. Si tiene exito, pre-llena todos los campos en el contexto (_parcial: false)
+   * 3. Si falla, pre-llena solo los 4 campos de contacto (_parcial: true) y navega igual
    */
-  const handleSeleccionar = useCallback((cliente) => {
-    setDatosPersonales({
-      nombres: cliente.nombres || '',
-      apellidoPaterno: cliente.apellidoPaterno || '',
-      apellidoMaterno: cliente.apellidoMaterno || '',
-      telefonoCelular: cliente.telefonoCelular || '',
-      _parcial: true,
-    })
-    navigate('/paso-5')
+  const handleSeleccionar = useCallback(async (cliente) => {
+    setCargandoSeleccion(cliente.id)
+    const baseUrl = import.meta.env.VITE_API_URL || ''
+
+    try {
+      const resp = await fetch(`${baseUrl}/api/clientes/${cliente.id}`)
+
+      if (resp.ok) {
+        const data = await resp.json()
+        setDatosPersonales({ ...data.cliente, _parcial: false })
+      } else {
+        throw new Error(`HTTP ${resp.status}`)
+      }
+    } catch {
+      setDatosPersonales({
+        nombres: cliente.nombres || '',
+        apellidoPaterno: cliente.apellidoPaterno || '',
+        apellidoMaterno: cliente.apellidoMaterno || '',
+        telefonoCelular: cliente.telefonoCelular || '',
+        _parcial: true,
+      })
+    } finally {
+      setCargandoSeleccion(null)
+      navigate('/paso-5')
+    }
   }, [setDatosPersonales, navigate])
 
   function handleVolver() {
@@ -400,7 +436,7 @@ export default function ClientesHistoricos() {
 
       {/* Contenido */}
       <main className="flex-1 w-full max-w-2xl mx-auto px-4 py-6 flex flex-col gap-8">
-        <SeccionBusqueda onSeleccionar={handleSeleccionar} />
+        <SeccionBusqueda onSeleccionar={handleSeleccionar} cargandoId={cargandoSeleccion} />
 
         {/* Divisor */}
         <div className="flex items-center gap-3">
@@ -409,7 +445,7 @@ export default function ClientesHistoricos() {
           <div className="flex-1 h-px bg-gray-200" aria-hidden="true" />
         </div>
 
-        <SeccionRecientes onSeleccionar={handleSeleccionar} />
+        <SeccionRecientes onSeleccionar={handleSeleccionar} cargandoId={cargandoSeleccion} />
       </main>
 
       {/* Footer con disclaimer */}

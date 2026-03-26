@@ -1,0 +1,2897 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "https://excalidraw.com",
+  "elements": [
+    {
+      "id": "ext_bg",
+      "type": "rectangle",
+      "x": 710,
+      "y": 18,
+      "width": 562,
+      "height": 92,
+      "strokeColor": "#9c36b5",
+      "backgroundColor": "#f3d9fa",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 40,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": []
+    },
+    {
+      "id": "ext_lbl",
+      "type": "text",
+      "x": 880,
+      "y": 24,
+      "width": 121.4,
+      "height": 19.5,
+      "text": "EXTERNAL API",
+      "fontSize": 13,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "strokeColor": "#9c36b5"
+    },
+    {
+      "id": "fe_bg",
+      "type": "rectangle",
+      "x": 20,
+      "y": 130,
+      "width": 660,
+      "height": 1290,
+      "strokeColor": "#4263eb",
+      "backgroundColor": "#e8f4ff",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 30,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": []
+    },
+    {
+      "id": "fe_lbl",
+      "type": "text",
+      "x": 220,
+      "y": 138,
+      "width": 238.4,
+      "height": 21.0,
+      "text": "FRONTEND  (React + Vite)",
+      "fontSize": 14,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "strokeColor": "#4263eb"
+    },
+    {
+      "id": "sv_bg",
+      "type": "rectangle",
+      "x": 700,
+      "y": 130,
+      "width": 582,
+      "height": 1060,
+      "strokeColor": "#e67700",
+      "backgroundColor": "#fff9db",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 40,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": []
+    },
+    {
+      "id": "sv_lbl",
+      "type": "text",
+      "x": 770,
+      "y": 138,
+      "width": 274.8,
+      "height": 21.0,
+      "text": "BACKEND  (Express + Node.js)",
+      "fontSize": 14,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "strokeColor": "#e67700"
+    },
+    {
+      "id": "db_bg",
+      "type": "rectangle",
+      "x": 1302,
+      "y": 130,
+      "width": 642,
+      "height": 1060,
+      "strokeColor": "#2f9e44",
+      "backgroundColor": "#ebfbee",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 40,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": []
+    },
+    {
+      "id": "db_lbl",
+      "type": "text",
+      "x": 1460,
+      "y": 138,
+      "width": 220.20000000000002,
+      "height": 21.0,
+      "text": "DATABASE  (Prisma ORM)",
+      "fontSize": 14,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "strokeColor": "#2f9e44"
+    },
+    {
+      "id": "aws_bg",
+      "type": "rectangle",
+      "x": 20,
+      "y": 1440,
+      "width": 1924,
+      "height": 120,
+      "strokeColor": "#c2255c",
+      "backgroundColor": "#fff0f6",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 40,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": []
+    },
+    {
+      "id": "aws_lbl",
+      "type": "text",
+      "x": 850,
+      "y": 1447,
+      "width": 183.8,
+      "height": 21.0,
+      "text": "AWS INFRASTRUCTURE",
+      "fontSize": 14,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "strokeColor": "#c2255c"
+    },
+    {
+      "id": "ds",
+      "type": "rectangle",
+      "x": 728,
+      "y": 28,
+      "width": 524,
+      "height": 72,
+      "strokeColor": "#7048e8",
+      "backgroundColor": "#e5dbff",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": [
+        {
+          "id": "ds_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "ds_t",
+      "type": "text",
+      "x": 732,
+      "y": 37.0,
+      "width": 516,
+      "height": 54.0,
+      "text": "DeepSeek API\napi.deepseek.com/chat/completions\nmodel: deepseek-chat  |  OpenAI-compatible interface",
+      "fontSize": 12,
+      "fontFamily": 3,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "ds",
+      "originalText": "DeepSeek API\napi.deepseek.com/chat/completions\nmodel: deepseek-chat  |  OpenAI-compatible interface"
+    },
+    {
+      "id": "app",
+      "type": "rectangle",
+      "x": 40,
+      "y": 162,
+      "width": 620,
+      "height": 72,
+      "strokeColor": "#4263eb",
+      "backgroundColor": "#dbe4ff",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": [
+        {
+          "id": "app_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "app_t",
+      "type": "text",
+      "x": 44,
+      "y": 178.5,
+      "width": 612,
+      "height": 39.0,
+      "text": "App.jsx\nBrowserRouter + WizardProvider + StepSync + Routes",
+      "fontSize": 13,
+      "fontFamily": 3,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "app",
+      "originalText": "App.jsx\nBrowserRouter + WizardProvider + StepSync + Routes"
+    },
+    {
+      "id": "wctx",
+      "type": "rectangle",
+      "x": 60,
+      "y": 268,
+      "width": 580,
+      "height": 68,
+      "strokeColor": "#7048e8",
+      "backgroundColor": "#e9d8fd",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": [
+        {
+          "id": "wctx_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "wctx_t",
+      "type": "text",
+      "x": 64,
+      "y": 284.0,
+      "width": 572,
+      "height": 36.0,
+      "text": "WizardContext.jsx  |  useWizard()\nState: 16 wizard vars + datosPersonales + sesionId + perfilId + resultado",
+      "fontSize": 12,
+      "fontFamily": 3,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "wctx",
+      "originalText": "WizardContext.jsx  |  useWizard()\nState: 16 wizard vars + datosPersonales + sesionId + perfilId + resultado"
+    },
+    {
+      "id": "wlay",
+      "type": "rectangle",
+      "x": 60,
+      "y": 368,
+      "width": 580,
+      "height": 52,
+      "strokeColor": "#1c7ed6",
+      "backgroundColor": "#d0ebff",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": [
+        {
+          "id": "wlay_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "wlay_t",
+      "type": "text",
+      "x": 64,
+      "y": 384.25,
+      "width": 572,
+      "height": 19.5,
+      "text": "WizardLayout.jsx  (ProgressBar + Outlet)",
+      "fontSize": 13,
+      "fontFamily": 3,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "wlay",
+      "originalText": "WizardLayout.jsx  (ProgressBar + Outlet)"
+    },
+    {
+      "id": "steps_c",
+      "type": "rectangle",
+      "x": 60,
+      "y": 452,
+      "width": 580,
+      "height": 376,
+      "strokeColor": "#4263eb",
+      "backgroundColor": "#e8f4ff",
+      "fillStyle": "solid",
+      "strokeWidth": 1,
+      "roughness": 0,
+      "opacity": 100,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": [],
+      "strokeStyle": "dashed"
+    },
+    {
+      "id": "steps_lbl",
+      "type": "text",
+      "x": 72,
+      "y": 458,
+      "width": 270.25,
+      "height": 16.5,
+      "text": "Wizard Steps  (/paso-1 ... /paso-5)",
+      "fontSize": 11,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "strokeColor": "#4263eb"
+    },
+    {
+      "id": "s1",
+      "type": "rectangle",
+      "x": 78,
+      "y": 476,
+      "width": 544,
+      "height": 50,
+      "strokeColor": "#1c7ed6",
+      "backgroundColor": "#d0ebff",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": [
+        {
+          "id": "s1_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "s1_t",
+      "type": "text",
+      "x": 82,
+      "y": 484.5,
+      "width": 536,
+      "height": 33.0,
+      "text": "Step1Cliente.jsx\nocupacion  antiguedad  ingresoMensual  compruebaIngresos  tipoDomicilio",
+      "fontSize": 11,
+      "fontFamily": 3,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "s1",
+      "originalText": "Step1Cliente.jsx\nocupacion  antiguedad  ingresoMensual  compruebaIngresos  tipoDomicilio"
+    },
+    {
+      "id": "s2",
+      "type": "rectangle",
+      "x": 78,
+      "y": 540,
+      "width": 544,
+      "height": 50,
+      "strokeColor": "#1c7ed6",
+      "backgroundColor": "#d0ebff",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": [
+        {
+          "id": "s2_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "s2_t",
+      "type": "text",
+      "x": 82,
+      "y": 548.5,
+      "width": 536,
+      "height": 33.0,
+      "text": "Step2PerfilFinanciero.jsx\nhistorialCrediticio  deudasMensuales  rentaHipoteca  numDependientes",
+      "fontSize": 11,
+      "fontFamily": 3,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "s2",
+      "originalText": "Step2PerfilFinanciero.jsx\nhistorialCrediticio  deudasMensuales  rentaHipoteca  numDependientes"
+    },
+    {
+      "id": "s3",
+      "type": "rectangle",
+      "x": 78,
+      "y": 604,
+      "width": 544,
+      "height": 50,
+      "strokeColor": "#1c7ed6",
+      "backgroundColor": "#d0ebff",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": [
+        {
+          "id": "s3_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "s3_t",
+      "type": "text",
+      "x": 82,
+      "y": 612.5,
+      "width": 536,
+      "height": 33.0,
+      "text": "Step3AutoOperacion.jsx\nprecioAuto  anioModelo  tipoUnidad  enganche  mensualidadBuscada  plazoDeseado  aceptaAjustar",
+      "fontSize": 11,
+      "fontFamily": 3,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "s3",
+      "originalText": "Step3AutoOperacion.jsx\nprecioAuto  anioModelo  tipoUnidad  enganche  mensualidadBuscada  plazoDeseado  aceptaAjustar"
+    },
+    {
+      "id": "s4",
+      "type": "rectangle",
+      "x": 78,
+      "y": 668,
+      "width": 544,
+      "height": 50,
+      "strokeColor": "#1971c2",
+      "backgroundColor": "#a5d8ff",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": [
+        {
+          "id": "s4_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "s4_t",
+      "type": "text",
+      "x": 82,
+      "y": 676.5,
+      "width": 536,
+      "height": 33.0,
+      "text": "Step4ResultadoExpress.jsx\nResultado UI  +  CTA Step5 only when clasificacion = Banco | Financiera",
+      "fontSize": 11,
+      "fontFamily": 3,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "s4",
+      "originalText": "Step4ResultadoExpress.jsx\nResultado UI  +  CTA Step5 only when clasificacion = Banco | Financiera"
+    },
+    {
+      "id": "s5",
+      "type": "rectangle",
+      "x": 78,
+      "y": 732,
+      "width": 544,
+      "height": 68,
+      "strokeColor": "#1c7ed6",
+      "backgroundColor": "#d0ebff",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": [
+        {
+          "id": "s5_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "s5_t",
+      "type": "text",
+      "x": 82,
+      "y": 749.5,
+      "width": 536,
+      "height": 33.0,
+      "text": "Step5DatosPersonales.jsx  (mini-wizard 3 sub-pasos)\nContacto  |  Identificacion  |  Domicilio  [PII - LFPDPPP]",
+      "fontSize": 11,
+      "fontFamily": 3,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "s5",
+      "originalText": "Step5DatosPersonales.jsx  (mini-wizard 3 sub-pasos)\nContacto  |  Identificacion  |  Domicilio  [PII - LFPDPPP]"
+    },
+    {
+      "id": "hook",
+      "type": "rectangle",
+      "x": 60,
+      "y": 844,
+      "width": 288,
+      "height": 52,
+      "strokeColor": "#e67700",
+      "backgroundColor": "#fff3bf",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": [
+        {
+          "id": "hook_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "hook_t",
+      "type": "text",
+      "x": 64,
+      "y": 852.0,
+      "width": 280,
+      "height": 36.0,
+      "text": "usePerfilador.js\ntriggerAnalysis(dataOverride?)",
+      "fontSize": 12,
+      "fontFamily": 3,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "hook",
+      "originalText": "usePerfilador.js\ntriggerAnalysis(dataOverride?)"
+    },
+    {
+      "id": "pb",
+      "type": "rectangle",
+      "x": 368,
+      "y": 844,
+      "width": 272,
+      "height": 52,
+      "strokeColor": "#e67700",
+      "backgroundColor": "#fff3bf",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": [
+        {
+          "id": "pb_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "pb_t",
+      "type": "text",
+      "x": 372,
+      "y": 852.0,
+      "width": 264,
+      "height": 36.0,
+      "text": "promptBuilder.js\nbuildPrompt(wizardData)",
+      "fontSize": 12,
+      "fontFamily": 3,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "pb",
+      "originalText": "promptBuilder.js\nbuildPrompt(wizardData)"
+    },
+    {
+      "id": "rp",
+      "type": "rectangle",
+      "x": 368,
+      "y": 914,
+      "width": 272,
+      "height": 50,
+      "strokeColor": "#e67700",
+      "backgroundColor": "#fff3bf",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": [
+        {
+          "id": "rp_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "rp_t",
+      "type": "text",
+      "x": 372,
+      "y": 921.0,
+      "width": 264,
+      "height": 36.0,
+      "text": "responseParser.js\nparseResponse(rawText)",
+      "fontSize": 12,
+      "fontFamily": 3,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "rp",
+      "originalText": "responseParser.js\nparseResponse(rawText)"
+    },
+    {
+      "id": "clh",
+      "type": "rectangle",
+      "x": 60,
+      "y": 1004,
+      "width": 580,
+      "height": 52,
+      "strokeColor": "#1c7ed6",
+      "backgroundColor": "#d0ebff",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": [
+        {
+          "id": "clh_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "clh_t",
+      "type": "text",
+      "x": 64,
+      "y": 1012.0,
+      "width": 572,
+      "height": 36.0,
+      "text": "ClientesHistoricos.jsx  (/clientes)\nSearch by telefono + 10 recientes + pre-fill Step5 sub-paso 1",
+      "fontSize": 12,
+      "fontFamily": 3,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "clh",
+      "originalText": "ClientesHistoricos.jsx  (/clientes)\nSearch by telefono + 10 recientes + pre-fill Step5 sub-paso 1"
+    },
+    {
+      "id": "ui_bg",
+      "type": "rectangle",
+      "x": 60,
+      "y": 1090,
+      "width": 580,
+      "height": 90,
+      "strokeColor": "#868e96",
+      "backgroundColor": "#f8f9fa",
+      "fillStyle": "solid",
+      "strokeWidth": 1,
+      "roughness": 0,
+      "opacity": 100,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": [],
+      "strokeStyle": "dashed"
+    },
+    {
+      "id": "ui_lbl",
+      "type": "text",
+      "x": 72,
+      "y": 1097,
+      "width": 270.25,
+      "height": 16.5,
+      "text": "UI Components  (src/components/ui/)",
+      "fontSize": 11,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "strokeColor": "#868e96"
+    },
+    {
+      "id": "ui_items",
+      "type": "text",
+      "x": 72,
+      "y": 1118,
+      "width": 689.5,
+      "height": 15.0,
+      "text": "Button.jsx   Select.jsx   InputNumber.jsx   Card.jsx   Alert.jsx   LoadingSpinner.jsx   ProgressBar.jsx",
+      "fontSize": 10,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "strokeColor": "#495057"
+    },
+    {
+      "id": "lam",
+      "type": "rectangle",
+      "x": 718,
+      "y": 162,
+      "width": 544,
+      "height": 52,
+      "strokeColor": "#e67700",
+      "backgroundColor": "#ffd8a8",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": [
+        {
+          "id": "lam_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "lam_t",
+      "type": "text",
+      "x": 722,
+      "y": 170.0,
+      "width": 536,
+      "height": 36.0,
+      "text": "server/lambda.cjs\nserverless(app)  =>  module.exports.handler",
+      "fontSize": 12,
+      "fontFamily": 3,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "lam",
+      "originalText": "server/lambda.cjs\nserverless(app)  =>  module.exports.handler"
+    },
+    {
+      "id": "srv",
+      "type": "rectangle",
+      "x": 718,
+      "y": 242,
+      "width": 544,
+      "height": 762,
+      "strokeColor": "#fd7e14",
+      "backgroundColor": "#fffae6",
+      "fillStyle": "solid",
+      "strokeWidth": 1,
+      "roughness": 0,
+      "opacity": 100,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": []
+    },
+    {
+      "id": "srv_lbl",
+      "type": "text",
+      "x": 728,
+      "y": 250,
+      "width": 347.6,
+      "height": 18.0,
+      "text": "server/index.cjs  (Express app  PORT 3001)",
+      "fontSize": 12,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "strokeColor": "#e67700"
+    },
+    {
+      "id": "ep1",
+      "type": "rectangle",
+      "x": 736,
+      "y": 274,
+      "width": 508,
+      "height": 44,
+      "strokeColor": "#e67700",
+      "backgroundColor": "#fff3bf",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": [
+        {
+          "id": "ep1_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "ep1_t",
+      "type": "text",
+      "x": 740,
+      "y": 287.75,
+      "width": 500,
+      "height": 16.5,
+      "text": "POST  /api/analyze  ->  proxy DeepSeek  returns { text }  (timeout 25s)",
+      "fontSize": 11,
+      "fontFamily": 3,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "ep1",
+      "originalText": "POST  /api/analyze  ->  proxy DeepSeek  returns { text }  (timeout 25s)"
+    },
+    {
+      "id": "ep2",
+      "type": "rectangle",
+      "x": 736,
+      "y": 328,
+      "width": 508,
+      "height": 44,
+      "strokeColor": "#e67700",
+      "backgroundColor": "#fff3bf",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": [
+        {
+          "id": "ep2_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "ep2_t",
+      "type": "text",
+      "x": 740,
+      "y": 341.75,
+      "width": 500,
+      "height": 16.5,
+      "text": "POST  /api/iniciar-sesion  ->  creates SesionWizard (borrador, pasoActual:1)  returns { sesionId }",
+      "fontSize": 11,
+      "fontFamily": 3,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "ep2",
+      "originalText": "POST  /api/iniciar-sesion  ->  creates SesionWizard (borrador, pasoActual:1)  returns { sesionId }"
+    },
+    {
+      "id": "ep3",
+      "type": "rectangle",
+      "x": 736,
+      "y": 382,
+      "width": 508,
+      "height": 44,
+      "strokeColor": "#1c7ed6",
+      "backgroundColor": "#e7f5ff",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": [
+        {
+          "id": "ep3_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "ep3_t",
+      "type": "text",
+      "x": 740,
+      "y": 395.75,
+      "width": 500,
+      "height": 16.5,
+      "text": "PATCH /api/sesion/:sesionId  ->  merges datosWizardJson  updates pasoActual (2 or 3)",
+      "fontSize": 11,
+      "fontFamily": 3,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "ep3",
+      "originalText": "PATCH /api/sesion/:sesionId  ->  merges datosWizardJson  updates pasoActual (2 or 3)"
+    },
+    {
+      "id": "ep4",
+      "type": "rectangle",
+      "x": 736,
+      "y": 436,
+      "width": 508,
+      "height": 44,
+      "strokeColor": "#e67700",
+      "backgroundColor": "#fff3bf",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": [
+        {
+          "id": "ep4_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "ep4_t",
+      "type": "text",
+      "x": 740,
+      "y": 449.75,
+      "width": 500,
+      "height": 16.5,
+      "text": "POST  /api/guardar-sesion  ->  finalizes  creates PerfilCompleto | InteraccionAnonima",
+      "fontSize": 11,
+      "fontFamily": 3,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "ep4",
+      "originalText": "POST  /api/guardar-sesion  ->  finalizes  creates PerfilCompleto | InteraccionAnonima"
+    },
+    {
+      "id": "ep5",
+      "type": "rectangle",
+      "x": 736,
+      "y": 490,
+      "width": 508,
+      "height": 44,
+      "strokeColor": "#e67700",
+      "backgroundColor": "#fff3bf",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": [
+        {
+          "id": "ep5_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "ep5_t",
+      "type": "text",
+      "x": 740,
+      "y": 503.75,
+      "width": 500,
+      "height": 16.5,
+      "text": "POST  /api/guardar-contacto  ->  UPSERT DatosPersonalesPaso5 sub-paso 1  paso5ContactoGuardado=true",
+      "fontSize": 11,
+      "fontFamily": 3,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "ep5",
+      "originalText": "POST  /api/guardar-contacto  ->  UPSERT DatosPersonalesPaso5 sub-paso 1  paso5ContactoGuardado=true"
+    },
+    {
+      "id": "ep6",
+      "type": "rectangle",
+      "x": 736,
+      "y": 544,
+      "width": 508,
+      "height": 44,
+      "strokeColor": "#d9480f",
+      "backgroundColor": "#ffe8cc",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": [
+        {
+          "id": "ep6_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "ep6_t",
+      "type": "text",
+      "x": 740,
+      "y": 557.75,
+      "width": 500,
+      "height": 16.5,
+      "text": "PUT   /api/guardar-perfil/:sesionId  ->  UPDATE sub-pasos 2+3  paso5Completado=true",
+      "fontSize": 11,
+      "fontFamily": 3,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "ep6",
+      "originalText": "PUT   /api/guardar-perfil/:sesionId  ->  UPDATE sub-pasos 2+3  paso5Completado=true"
+    },
+    {
+      "id": "ep7",
+      "type": "rectangle",
+      "x": 736,
+      "y": 598,
+      "width": 508,
+      "height": 44,
+      "strokeColor": "#2f9e44",
+      "backgroundColor": "#d3f9d8",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": [
+        {
+          "id": "ep7_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "ep7_t",
+      "type": "text",
+      "x": 740,
+      "y": 611.75,
+      "width": 500,
+      "height": 16.5,
+      "text": "GET   /api/clientes/recientes  ->  10 most recent from datos_personales_paso5",
+      "fontSize": 11,
+      "fontFamily": 3,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "ep7",
+      "originalText": "GET   /api/clientes/recientes  ->  10 most recent from datos_personales_paso5"
+    },
+    {
+      "id": "ep8",
+      "type": "rectangle",
+      "x": 736,
+      "y": 652,
+      "width": 508,
+      "height": 44,
+      "strokeColor": "#2f9e44",
+      "backgroundColor": "#d3f9d8",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": [
+        {
+          "id": "ep8_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "ep8_t",
+      "type": "text",
+      "x": 740,
+      "y": 665.75,
+      "width": 500,
+      "height": 16.5,
+      "text": "GET   /api/clientes?telefono=X  ->  search by exact phone number",
+      "fontSize": 11,
+      "fontFamily": 3,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "ep8",
+      "originalText": "GET   /api/clientes?telefono=X  ->  search by exact phone number"
+    },
+    {
+      "id": "ep9",
+      "type": "rectangle",
+      "x": 736,
+      "y": 706,
+      "width": 508,
+      "height": 44,
+      "strokeColor": "#2f9e44",
+      "backgroundColor": "#d3f9d8",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": [
+        {
+          "id": "ep9_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "ep9_t",
+      "type": "text",
+      "x": 740,
+      "y": 719.75,
+      "width": 500,
+      "height": 16.5,
+      "text": "GET   /api/clientes/:id  ->  full DatosPersonalesPaso5 record by UUID",
+      "fontSize": 11,
+      "fontFamily": 3,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "ep9",
+      "originalText": "GET   /api/clientes/:id  ->  full DatosPersonalesPaso5 record by UUID"
+    },
+    {
+      "id": "dbc",
+      "type": "rectangle",
+      "x": 718,
+      "y": 1050,
+      "width": 544,
+      "height": 52,
+      "strokeColor": "#e67700",
+      "backgroundColor": "#ffd8a8",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": [
+        {
+          "id": "dbc_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "dbc_t",
+      "type": "text",
+      "x": 722,
+      "y": 1067.75,
+      "width": 536,
+      "height": 16.5,
+      "text": "server/db/client.cjs  (Prisma singleton  global pattern  Lambda warm-reuse safe)",
+      "fontSize": 11,
+      "fontFamily": 3,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "dbc",
+      "originalText": "server/db/client.cjs  (Prisma singleton  global pattern  Lambda warm-reuse safe)"
+    },
+    {
+      "id": "sw",
+      "type": "rectangle",
+      "x": 1320,
+      "y": 162,
+      "width": 600,
+      "height": 196,
+      "strokeColor": "#0ca678",
+      "backgroundColor": "#c3fae8",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": [
+        {
+          "id": "sw_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "sw_t",
+      "type": "text",
+      "x": 1324,
+      "y": 218.75,
+      "width": 592,
+      "height": 82.5,
+      "text": "SesionWizard  =>  sesiones_wizard\nid  sesionToken  pasoActual  guardarCompleto\nclasificacionRecomendada?  viabilidadInicial?  cargaFinanciera?\nfuentePersistencia  datosWizardJson?\npaso5ContactoGuardado  paso5Completado",
+      "fontSize": 11,
+      "fontFamily": 3,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "sw",
+      "originalText": "SesionWizard  =>  sesiones_wizard\nid  sesionToken  pasoActual  guardarCompleto\nclasificacionRecomendada?  viabilidadInicial?  cargaFinanciera?\nfuentePersistencia  datosWizardJson?\npaso5ContactoGuardado  paso5Completado"
+    },
+    {
+      "id": "pc",
+      "type": "rectangle",
+      "x": 1320,
+      "y": 390,
+      "width": 600,
+      "height": 188,
+      "strokeColor": "#0ca678",
+      "backgroundColor": "#c3fae8",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": [
+        {
+          "id": "pc_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "pc_t",
+      "type": "text",
+      "x": 1324,
+      "y": 434.5,
+      "width": 592,
+      "height": 99.0,
+      "text": "PerfilCompleto  =>  perfiles_completos\nid  sesionId (->SesionWizard)\n16 wizard fields (Steps 1-3)\nviabilidadInicial  clasificacionRecomendada  capacidadPago\ncargaFinanciera  porQue  recomendacionesAccionables\nfraseVendedor  advertenciaComercial  resultadoLlmJson",
+      "fontSize": 11,
+      "fontFamily": 3,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "pc",
+      "originalText": "PerfilCompleto  =>  perfiles_completos\nid  sesionId (->SesionWizard)\n16 wizard fields (Steps 1-3)\nviabilidadInicial  clasificacionRecomendada  capacidadPago\ncargaFinanciera  porQue  recomendacionesAccionables\nfraseVendedor  advertenciaComercial  resultadoLlmJson"
+    },
+    {
+      "id": "dp",
+      "type": "rectangle",
+      "x": 1320,
+      "y": 610,
+      "width": 600,
+      "height": 238,
+      "strokeColor": "#0ca678",
+      "backgroundColor": "#c3fae8",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": [
+        {
+          "id": "dp_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "dp_t",
+      "type": "text",
+      "x": 1324,
+      "y": 669.0,
+      "width": 592,
+      "height": 120.0,
+      "text": "DatosPersonalesPaso5  =>  datos_personales_paso5  [PII]\nid  perfilId (->PerfilCompleto)\nSub-paso 1: nombres  apellidoPaterno  apellidoMaterno?  telefonoCelular\nSub-paso 2: fechaNacimiento?  rfc?  curp?  genero?  estadoCivil?\n            correoElectronico?  telefonoCasaTrabajo?\nSub-paso 3: calle  colonia  municipioDelegacion  estadoRepublica\n            codigoPostal  tipoDomicilioPaso5  tiempoEnDomicilio\nsubPasoCompletado (1|2|3)  completado",
+      "fontSize": 10,
+      "fontFamily": 3,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "dp",
+      "originalText": "DatosPersonalesPaso5  =>  datos_personales_paso5  [PII]\nid  perfilId (->PerfilCompleto)\nSub-paso 1: nombres  apellidoPaterno  apellidoMaterno?  telefonoCelular\nSub-paso 2: fechaNacimiento?  rfc?  curp?  genero?  estadoCivil?\n            correoElectronico?  telefonoCasaTrabajo?\nSub-paso 3: calle  colonia  municipioDelegacion  estadoRepublica\n            codigoPostal  tipoDomicilioPaso5  tiempoEnDomicilio\nsubPasoCompletado (1|2|3)  completado"
+    },
+    {
+      "id": "ia",
+      "type": "rectangle",
+      "x": 1320,
+      "y": 882,
+      "width": 600,
+      "height": 156,
+      "strokeColor": "#e67700",
+      "backgroundColor": "#fff9db",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": [
+        {
+          "id": "ia_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "ia_t",
+      "type": "text",
+      "x": 1324,
+      "y": 918.75,
+      "width": 592,
+      "height": 82.5,
+      "text": "InteraccionAnonima  =>  interacciones_anonimas\nid  sesionId (->SesionWizard)\nSolo campos categoricos - sin PII - sin valores exactos\nocupacion  rangosAntiguedad  rangoIngresos  rangoEnganche\nviabilidadInicial  clasificacionRecomendada='Subprime'",
+      "fontSize": 11,
+      "fontFamily": 3,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "ia",
+      "originalText": "InteraccionAnonima  =>  interacciones_anonimas\nid  sesionId (->SesionWizard)\nSolo campos categoricos - sin PII - sin valores exactos\nocupacion  rangosAntiguedad  rangoIngresos  rangoEnganche\nviabilidadInicial  clasificacionRecomendada='Subprime'"
+    },
+    {
+      "id": "aws_amp",
+      "type": "rectangle",
+      "x": 40,
+      "y": 1458,
+      "width": 220,
+      "height": 80,
+      "strokeColor": "#c92a2a",
+      "backgroundColor": "#ffe3e3",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": [
+        {
+          "id": "aws_amp_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "aws_amp_t",
+      "type": "text",
+      "x": 44,
+      "y": 1480.0,
+      "width": 212,
+      "height": 36.0,
+      "text": "AWS Amplify\nCI/CD  build  hosting",
+      "fontSize": 12,
+      "fontFamily": 3,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "aws_amp",
+      "originalText": "AWS Amplify\nCI/CD  build  hosting"
+    },
+    {
+      "id": "aws_lam",
+      "type": "rectangle",
+      "x": 310,
+      "y": 1458,
+      "width": 220,
+      "height": 80,
+      "strokeColor": "#c92a2a",
+      "backgroundColor": "#ffe3e3",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": [
+        {
+          "id": "aws_lam_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "aws_lam_t",
+      "type": "text",
+      "x": 314,
+      "y": 1480.0,
+      "width": 212,
+      "height": 36.0,
+      "text": "AWS Lambda\nserverless-http",
+      "fontSize": 12,
+      "fontFamily": 3,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "aws_lam",
+      "originalText": "AWS Lambda\nserverless-http"
+    },
+    {
+      "id": "aws_pris",
+      "type": "rectangle",
+      "x": 590,
+      "y": 1458,
+      "width": 250,
+      "height": 80,
+      "strokeColor": "#e67700",
+      "backgroundColor": "#fff9db",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": [
+        {
+          "id": "aws_pris_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "aws_pris_t",
+      "type": "text",
+      "x": 594,
+      "y": 1473.25,
+      "width": 242,
+      "height": 49.5,
+      "text": "Prisma ORM\nschema.prisma (prod)\nschema.dev.prisma (local)",
+      "fontSize": 11,
+      "fontFamily": 3,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "aws_pris",
+      "originalText": "Prisma ORM\nschema.prisma (prod)\nschema.dev.prisma (local)"
+    },
+    {
+      "id": "aws_aur",
+      "type": "rectangle",
+      "x": 900,
+      "y": 1458,
+      "width": 300,
+      "height": 80,
+      "strokeColor": "#2f9e44",
+      "backgroundColor": "#d3f9d8",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": [
+        {
+          "id": "aws_aur_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "aws_aur_t",
+      "type": "text",
+      "x": 904,
+      "y": 1471.0,
+      "width": 292,
+      "height": 54.0,
+      "text": "Aurora Serverless v2\nPostgreSQL  (prod)\nDATABASE_URL",
+      "fontSize": 12,
+      "fontFamily": 3,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "aws_aur",
+      "originalText": "Aurora Serverless v2\nPostgreSQL  (prod)\nDATABASE_URL"
+    },
+    {
+      "id": "aws_sqlt",
+      "type": "rectangle",
+      "x": 1260,
+      "y": 1458,
+      "width": 250,
+      "height": 80,
+      "strokeColor": "#495057",
+      "backgroundColor": "#f1f3f5",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": [
+        {
+          "id": "aws_sqlt_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "aws_sqlt_t",
+      "type": "text",
+      "x": 1264,
+      "y": 1473.25,
+      "width": 242,
+      "height": 49.5,
+      "text": "SQLite  (local dev)\nnpm run db:setup\nschema.dev.prisma",
+      "fontSize": 11,
+      "fontFamily": 3,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "aws_sqlt",
+      "originalText": "SQLite  (local dev)\nnpm run db:setup\nschema.dev.prisma"
+    },
+    {
+      "id": "a_s1_ep2",
+      "type": "arrow",
+      "x": 622,
+      "y": 350,
+      "width": 114,
+      "height": 151,
+      "points": [
+        [
+          0,
+          151
+        ],
+        [
+          114,
+          0
+        ]
+      ],
+      "strokeColor": "#4263eb",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "boundElements": [
+        {
+          "id": "a_s1_ep2_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "a_s1_ep2_t",
+      "type": "text",
+      "x": 595.0,
+      "y": 415.5,
+      "width": 180.0,
+      "height": 16,
+      "text": "POST /api/iniciar-sesion",
+      "fontSize": 11,
+      "fontFamily": 2,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "strokeColor": "#868e96",
+      "containerId": "a_s1_ep2",
+      "originalText": "POST /api/iniciar-sesion"
+    },
+    {
+      "id": "a_s2_ep3",
+      "type": "arrow",
+      "x": 622,
+      "y": 404,
+      "width": 114,
+      "height": 161,
+      "points": [
+        [
+          0,
+          161
+        ],
+        [
+          114,
+          0
+        ]
+      ],
+      "strokeColor": "#4263eb",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "boundElements": [
+        {
+          "id": "a_s2_ep3_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "a_s2_ep3_t",
+      "type": "text",
+      "x": 584.5,
+      "y": 474.5,
+      "width": 202.5,
+      "height": 16,
+      "text": "PATCH /api/sesion/:sesionId",
+      "fontSize": 11,
+      "fontFamily": 2,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "strokeColor": "#868e96",
+      "containerId": "a_s2_ep3",
+      "originalText": "PATCH /api/sesion/:sesionId"
+    },
+    {
+      "id": "a_s3_ep3",
+      "type": "arrow",
+      "x": 622,
+      "y": 416,
+      "width": 114,
+      "height": 212,
+      "points": [
+        [
+          0,
+          212
+        ],
+        [
+          114,
+          0
+        ]
+      ],
+      "strokeColor": "#4263eb",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "boundElements": []
+    },
+    {
+      "id": "a_s5_ep5",
+      "type": "arrow",
+      "x": 622,
+      "y": 512,
+      "width": 114,
+      "height": 242,
+      "points": [
+        [
+          0,
+          242
+        ],
+        [
+          114,
+          0
+        ]
+      ],
+      "strokeColor": "#1c7ed6",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "boundElements": [
+        {
+          "id": "a_s5_ep5_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "a_s5_ep5_t",
+      "type": "text",
+      "x": 588.0,
+      "y": 623.0,
+      "width": 195.0,
+      "height": 16,
+      "text": "POST /api/guardar-contacto",
+      "fontSize": 11,
+      "fontFamily": 2,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "strokeColor": "#868e96",
+      "containerId": "a_s5_ep5",
+      "originalText": "POST /api/guardar-contacto"
+    },
+    {
+      "id": "a_s5_ep6",
+      "type": "arrow",
+      "x": 622,
+      "y": 566,
+      "width": 114,
+      "height": 204,
+      "points": [
+        [
+          0,
+          204
+        ],
+        [
+          114,
+          0
+        ]
+      ],
+      "strokeColor": "#1c7ed6",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "boundElements": [
+        {
+          "id": "a_s5_ep6_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "a_s5_ep6_t",
+      "type": "text",
+      "x": 563.5,
+      "y": 658.0,
+      "width": 247.5,
+      "height": 16,
+      "text": "PUT /api/guardar-perfil/:sesionId",
+      "fontSize": 11,
+      "fontFamily": 2,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "strokeColor": "#868e96",
+      "containerId": "a_s5_ep6",
+      "originalText": "PUT /api/guardar-perfil/:sesionId"
+    },
+    {
+      "id": "a_clh_eps",
+      "type": "arrow",
+      "x": 640,
+      "y": 620,
+      "width": 96,
+      "height": 410,
+      "points": [
+        [
+          0,
+          410
+        ],
+        [
+          96,
+          0
+        ]
+      ],
+      "strokeColor": "#1c7ed6",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "boundElements": [
+        {
+          "id": "a_clh_eps_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "a_clh_eps_t",
+      "type": "text",
+      "x": 534.0,
+      "y": 815.0,
+      "width": 330.0,
+      "height": 16,
+      "text": "GET /api/clientes (recientes|?telefono|/:id)",
+      "fontSize": 11,
+      "fontFamily": 2,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "strokeColor": "#868e96",
+      "containerId": "a_clh_eps",
+      "originalText": "GET /api/clientes (recientes|?telefono|/:id)"
+    },
+    {
+      "id": "a_s3_hook",
+      "type": "arrow",
+      "x": 205,
+      "y": 654,
+      "width": 145,
+      "height": 190,
+      "points": [
+        [
+          145,
+          0
+        ],
+        [
+          0,
+          190
+        ]
+      ],
+      "strokeColor": "#e67700",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "boundElements": [
+        {
+          "id": "a_s3_hook_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "a_s3_hook_t",
+      "type": "text",
+      "x": 218.0,
+      "y": 739.0,
+      "width": 127.5,
+      "height": 16,
+      "text": "triggerAnalysis()",
+      "fontSize": 11,
+      "fontFamily": 2,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "strokeColor": "#868e96",
+      "containerId": "a_s3_hook",
+      "originalText": "triggerAnalysis()"
+    },
+    {
+      "id": "a_hook_pb",
+      "type": "arrow",
+      "x": 348,
+      "y": 868,
+      "width": 20,
+      "height": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          20,
+          0
+        ]
+      ],
+      "strokeColor": "#e67700",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "boundElements": []
+    },
+    {
+      "id": "lbl_hook_pb",
+      "type": "text",
+      "x": 352,
+      "y": 854,
+      "width": 104.5,
+      "height": 15.0,
+      "text": "buildPrompt()",
+      "fontSize": 10,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "strokeColor": "#e67700"
+    },
+    {
+      "id": "a_hook_rp",
+      "type": "arrow",
+      "x": 348,
+      "y": 882,
+      "width": 20,
+      "height": 56,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          20,
+          56
+        ]
+      ],
+      "strokeColor": "#e67700",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "boundElements": []
+    },
+    {
+      "id": "lbl_hook_rp",
+      "type": "text",
+      "x": 352,
+      "y": 900,
+      "width": 117.5,
+      "height": 15.0,
+      "text": "parseResponse()",
+      "fontSize": 10,
+      "fontFamily": 2,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "strokeColor": "#e67700"
+    },
+    {
+      "id": "a_hook_ep1",
+      "type": "arrow",
+      "x": 348,
+      "y": 296,
+      "width": 388,
+      "height": 562,
+      "points": [
+        [
+          0,
+          562
+        ],
+        [
+          388,
+          0
+        ]
+      ],
+      "strokeColor": "#e67700",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "boundElements": [
+        {
+          "id": "a_hook_ep1_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "a_hook_ep1_t",
+      "type": "text",
+      "x": 482.5,
+      "y": 567.0,
+      "width": 127.5,
+      "height": 16,
+      "text": "POST /api/analyze",
+      "fontSize": 11,
+      "fontFamily": 2,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "strokeColor": "#868e96",
+      "containerId": "a_hook_ep1",
+      "originalText": "POST /api/analyze"
+    },
+    {
+      "id": "a_hook_ep4",
+      "type": "arrow",
+      "x": 348,
+      "y": 458,
+      "width": 388,
+      "height": 417,
+      "points": [
+        [
+          0,
+          417
+        ],
+        [
+          388,
+          0
+        ]
+      ],
+      "strokeColor": "#e67700",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "boundElements": [
+        {
+          "id": "a_hook_ep4_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "a_hook_ep4_t",
+      "type": "text",
+      "x": 458.0,
+      "y": 656.5,
+      "width": 180.0,
+      "height": 16,
+      "text": "POST /api/guardar-sesion",
+      "fontSize": 11,
+      "fontFamily": 2,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "strokeColor": "#868e96",
+      "containerId": "a_hook_ep4",
+      "originalText": "POST /api/guardar-sesion"
+    },
+    {
+      "id": "a_ep1_ds",
+      "type": "arrow",
+      "x": 980,
+      "y": 100,
+      "width": 0,
+      "height": 174,
+      "points": [
+        [
+          0,
+          174
+        ],
+        [
+          0,
+          0
+        ]
+      ],
+      "strokeColor": "#9c36b5",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "boundElements": [
+        {
+          "id": "a_ep1_ds_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "a_ep1_ds_t",
+      "type": "text",
+      "x": 945.0,
+      "y": 177.0,
+      "width": 75.0,
+      "height": 16,
+      "text": "proxies ->",
+      "fontSize": 11,
+      "fontFamily": 2,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "strokeColor": "#868e96",
+      "containerId": "a_ep1_ds",
+      "originalText": "proxies ->"
+    },
+    {
+      "id": "a_ds_ep1",
+      "type": "arrow",
+      "x": 1012,
+      "y": 100,
+      "width": 0,
+      "height": 174,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          174
+        ]
+      ],
+      "strokeColor": "#9c36b5",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "boundElements": [
+        {
+          "id": "a_ds_ep1_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "a_ds_ep1_t",
+      "type": "text",
+      "x": 973.5,
+      "y": 177.0,
+      "width": 82.5,
+      "height": 16,
+      "text": "<- { text }",
+      "fontSize": 11,
+      "fontFamily": 2,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "strokeColor": "#868e96",
+      "containerId": "a_ds_ep1",
+      "originalText": "<- { text }"
+    },
+    {
+      "id": "a_ep2_sw",
+      "type": "arrow",
+      "x": 1244,
+      "y": 214,
+      "width": 76,
+      "height": 136,
+      "points": [
+        [
+          0,
+          136
+        ],
+        [
+          76,
+          0
+        ]
+      ],
+      "strokeColor": "#0ca678",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "boundElements": [
+        {
+          "id": "a_ep2_sw_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "a_ep2_sw_t",
+      "type": "text",
+      "x": 1226.0,
+      "y": 272.0,
+      "width": 120.0,
+      "height": 16,
+      "text": "creates borrador",
+      "fontSize": 11,
+      "fontFamily": 2,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "strokeColor": "#868e96",
+      "containerId": "a_ep2_sw",
+      "originalText": "creates borrador"
+    },
+    {
+      "id": "a_ep3_sw",
+      "type": "arrow",
+      "x": 1244,
+      "y": 234,
+      "width": 76,
+      "height": 170,
+      "points": [
+        [
+          0,
+          170
+        ],
+        [
+          76,
+          0
+        ]
+      ],
+      "strokeColor": "#0ca678",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "boundElements": [
+        {
+          "id": "a_ep3_sw_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "a_ep3_sw_t",
+      "type": "text",
+      "x": 1219.0,
+      "y": 309.0,
+      "width": 135.0,
+      "height": 16,
+      "text": "updates pasoActual",
+      "fontSize": 11,
+      "fontFamily": 2,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "strokeColor": "#868e96",
+      "containerId": "a_ep3_sw",
+      "originalText": "updates pasoActual"
+    },
+    {
+      "id": "a_ep4_sw",
+      "type": "arrow",
+      "x": 1244,
+      "y": 254,
+      "width": 76,
+      "height": 186,
+      "points": [
+        [
+          0,
+          186
+        ],
+        [
+          76,
+          0
+        ]
+      ],
+      "strokeColor": "#0ca678",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "boundElements": [
+        {
+          "id": "a_ep4_sw_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "a_ep4_sw_t",
+      "type": "text",
+      "x": 1250.5,
+      "y": 337.0,
+      "width": 67.5,
+      "height": 16,
+      "text": "finalizes",
+      "fontSize": 11,
+      "fontFamily": 2,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "strokeColor": "#868e96",
+      "containerId": "a_ep4_sw",
+      "originalText": "finalizes"
+    },
+    {
+      "id": "a_ep4_pc",
+      "type": "arrow",
+      "x": 1244,
+      "y": 456,
+      "width": 76,
+      "height": 28,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          76,
+          28
+        ]
+      ],
+      "strokeColor": "#0ca678",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "boundElements": [
+        {
+          "id": "a_ep4_pc_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "a_ep4_pc_t",
+      "type": "text",
+      "x": 1212.0,
+      "y": 460.0,
+      "width": 150.0,
+      "height": 16,
+      "text": "guardarCompleto=true",
+      "fontSize": 11,
+      "fontFamily": 2,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "strokeColor": "#868e96",
+      "containerId": "a_ep4_pc",
+      "originalText": "guardarCompleto=true"
+    },
+    {
+      "id": "a_ep4_ia",
+      "type": "arrow",
+      "x": 1244,
+      "y": 468,
+      "width": 76,
+      "height": 474,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          76,
+          474
+        ]
+      ],
+      "strokeColor": "#e67700",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "boundElements": [
+        {
+          "id": "a_ep4_ia_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "a_ep4_ia_t",
+      "type": "text",
+      "x": 1170.0,
+      "y": 695.0,
+      "width": 240.0,
+      "height": 16,
+      "text": "guardarCompleto=false (Subprime)",
+      "fontSize": 11,
+      "fontFamily": 2,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "strokeColor": "#868e96",
+      "containerId": "a_ep4_ia",
+      "originalText": "guardarCompleto=false (Subprime)"
+    },
+    {
+      "id": "a_ep5_dp",
+      "type": "arrow",
+      "x": 1244,
+      "y": 512,
+      "width": 76,
+      "height": 202,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          76,
+          202
+        ]
+      ],
+      "strokeColor": "#0ca678",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "boundElements": [
+        {
+          "id": "a_ep5_dp_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "a_ep5_dp_t",
+      "type": "text",
+      "x": 1222.5,
+      "y": 603.0,
+      "width": 127.5,
+      "height": 16,
+      "text": "UPSERT sub-paso 1",
+      "fontSize": 11,
+      "fontFamily": 2,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "strokeColor": "#868e96",
+      "containerId": "a_ep5_dp",
+      "originalText": "UPSERT sub-paso 1"
+    },
+    {
+      "id": "a_ep6_dp",
+      "type": "arrow",
+      "x": 1244,
+      "y": 566,
+      "width": 76,
+      "height": 168,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          76,
+          168
+        ]
+      ],
+      "strokeColor": "#0ca678",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "boundElements": [
+        {
+          "id": "a_ep6_dp_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "a_ep6_dp_t",
+      "type": "text",
+      "x": 1212.0,
+      "y": 640.0,
+      "width": 150.0,
+      "height": 16,
+      "text": "UPDATE sub-pasos 2+3",
+      "fontSize": 11,
+      "fontFamily": 2,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "strokeColor": "#868e96",
+      "containerId": "a_ep6_dp",
+      "originalText": "UPDATE sub-pasos 2+3"
+    },
+    {
+      "id": "a_sw_pc",
+      "type": "arrow",
+      "x": 1620,
+      "y": 358,
+      "width": 0,
+      "height": 32,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          32
+        ]
+      ],
+      "strokeColor": "#0ca678",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 1,
+      "roughness": 0,
+      "opacity": 100,
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "boundElements": [
+        {
+          "id": "a_sw_pc_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "a_sw_pc_t",
+      "type": "text",
+      "x": 1609.5,
+      "y": 364.0,
+      "width": 22.5,
+      "height": 16,
+      "text": "1:1",
+      "fontSize": 11,
+      "fontFamily": 2,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "strokeColor": "#868e96",
+      "containerId": "a_sw_pc",
+      "originalText": "1:1"
+    },
+    {
+      "id": "a_pc_dp",
+      "type": "arrow",
+      "x": 1620,
+      "y": 578,
+      "width": 0,
+      "height": 32,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          32
+        ]
+      ],
+      "strokeColor": "#0ca678",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 1,
+      "roughness": 0,
+      "opacity": 100,
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "boundElements": [
+        {
+          "id": "a_pc_dp_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "a_pc_dp_t",
+      "type": "text",
+      "x": 1609.5,
+      "y": 584.0,
+      "width": 22.5,
+      "height": 16,
+      "text": "1:1",
+      "fontSize": 11,
+      "fontFamily": 2,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "strokeColor": "#868e96",
+      "containerId": "a_pc_dp",
+      "originalText": "1:1"
+    },
+    {
+      "id": "a_sw_ia",
+      "type": "arrow",
+      "x": 1940,
+      "y": 260,
+      "width": 0,
+      "height": 700,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          700
+        ]
+      ],
+      "strokeColor": "#e67700",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 1,
+      "roughness": 0,
+      "opacity": 100,
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "boundElements": [
+        {
+          "id": "a_sw_ia_t",
+          "type": "text"
+        }
+      ],
+      "strokeStyle": "dashed"
+    },
+    {
+      "id": "a_sw_ia_t",
+      "type": "text",
+      "x": 1929.5,
+      "y": 600.0,
+      "width": 22.5,
+      "height": 16,
+      "text": "1:1",
+      "fontSize": 11,
+      "fontFamily": 2,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "strokeColor": "#868e96",
+      "containerId": "a_sw_ia",
+      "originalText": "1:1"
+    },
+    {
+      "id": "a_lam_srv",
+      "type": "arrow",
+      "x": 990,
+      "y": 214,
+      "width": 0,
+      "height": 28,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          28
+        ]
+      ],
+      "strokeColor": "#e67700",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "boundElements": [
+        {
+          "id": "a_lam_srv_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "a_lam_srv_t",
+      "type": "text",
+      "x": 937.5,
+      "y": 218.0,
+      "width": 112.5,
+      "height": 16,
+      "text": "serverless(app)",
+      "fontSize": 11,
+      "fontFamily": 2,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "strokeColor": "#868e96",
+      "containerId": "a_lam_srv",
+      "originalText": "serverless(app)"
+    },
+    {
+      "id": "a_dbc_all",
+      "type": "arrow",
+      "x": 1262,
+      "y": 280,
+      "width": 68,
+      "height": 796,
+      "points": [
+        [
+          0,
+          796
+        ],
+        [
+          68,
+          0
+        ]
+      ],
+      "strokeColor": "#0ca678",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "boundElements": [
+        {
+          "id": "a_dbc_all_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "a_dbc_all_t",
+      "type": "text",
+      "x": 1180.5,
+      "y": 668.0,
+      "width": 247.5,
+      "height": 16,
+      "text": "Prisma ORM (manages all 4 tables)",
+      "fontSize": 11,
+      "fontFamily": 2,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "strokeColor": "#868e96",
+      "containerId": "a_dbc_all",
+      "originalText": "Prisma ORM (manages all 4 tables)"
+    },
+    {
+      "id": "a_amp_lam",
+      "type": "arrow",
+      "x": 260,
+      "y": 1498,
+      "width": 50,
+      "height": 0,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          50,
+          0
+        ]
+      ],
+      "strokeColor": "#c92a2a",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "boundElements": [
+        {
+          "id": "a_amp_lam_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "a_amp_lam_t",
+      "type": "text",
+      "x": 260.5,
+      "y": 1488.0,
+      "width": 52.5,
+      "height": 16,
+      "text": "deploys",
+      "fontSize": 11,
+      "fontFamily": 2,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "strokeColor": "#868e96",
+      "containerId": "a_amp_lam",
+      "originalText": "deploys"
+    },
+    {
+      "id": "a_lam_hand",
+      "type": "arrow",
+      "x": 420,
+      "y": 214,
+      "width": 570,
+      "height": 1244,
+      "points": [
+        [
+          0,
+          1244
+        ],
+        [
+          570,
+          0
+        ]
+      ],
+      "strokeColor": "#c92a2a",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "boundElements": [
+        {
+          "id": "a_lam_hand_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "a_lam_hand_t",
+      "type": "text",
+      "x": 649.0,
+      "y": 826.0,
+      "width": 120.0,
+      "height": 16,
+      "text": "executes handler",
+      "fontSize": 11,
+      "fontFamily": 2,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "strokeColor": "#868e96",
+      "containerId": "a_lam_hand",
+      "originalText": "executes handler"
+    },
+    {
+      "id": "a_aur_dbc",
+      "type": "arrow",
+      "x": 1050,
+      "y": 1102,
+      "width": 0,
+      "height": 356,
+      "points": [
+        [
+          0,
+          356
+        ],
+        [
+          0,
+          0
+        ]
+      ],
+      "strokeColor": "#2f9e44",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "boundElements": [
+        {
+          "id": "a_aur_dbc_t",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "a_aur_dbc_t",
+      "type": "text",
+      "x": 983.5,
+      "y": 1270.0,
+      "width": 142.5,
+      "height": 16,
+      "text": "DATABASE_URL (prod)",
+      "fontSize": 11,
+      "fontFamily": 2,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "strokeColor": "#868e96",
+      "containerId": "a_aur_dbc",
+      "originalText": "DATABASE_URL (prod)"
+    },
+    {
+      "id": "a_sqlt_dbc",
+      "type": "arrow",
+      "x": 1060,
+      "y": 1108,
+      "width": 325,
+      "height": 350,
+      "points": [
+        [
+          325,
+          350
+        ],
+        [
+          0,
+          0
+        ]
+      ],
+      "strokeColor": "#495057",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "boundElements": [
+        {
+          "id": "a_sqlt_dbc_t",
+          "type": "text"
+        }
+      ],
+      "strokeStyle": "dashed"
+    },
+    {
+      "id": "a_sqlt_dbc_t",
+      "type": "text",
+      "x": 1159.5,
+      "y": 1273.0,
+      "width": 135.0,
+      "height": 16,
+      "text": "DATABASE_URL (dev)",
+      "fontSize": 11,
+      "fontFamily": 2,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "strokeColor": "#868e96",
+      "containerId": "a_sqlt_dbc",
+      "originalText": "DATABASE_URL (dev)"
+    }
+  ],
+  "appState": {
+    "gridSize": null,
+    "viewBackgroundColor": "#f8f9fa"
+  },
+  "files": {}
+}

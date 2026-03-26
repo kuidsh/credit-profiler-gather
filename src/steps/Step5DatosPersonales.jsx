@@ -610,14 +610,44 @@ function SubPaso3({ campos, errores, onChange }) {
 // ---------------------------------------------------------------------------
 
 export default function Step5DatosPersonales() {
-  const { goToStep, setDatosPersonales } = useWizard()
+  const { goToStep, setDatosPersonales, sesionId, perfilId, datosPersonales } = useWizard()
   const navigate = useNavigate()
 
   // Sub-paso actual: 1 | 2 | 3
   const [subStep, setSubStep] = useState(1)
 
-  // Todos los campos en un solo objeto; se actualizan incrementalmente
-  const [campos, setCampos] = useState(INITIAL_CAMPOS)
+  // Todos los campos en un solo objeto; se actualizan incrementalmente.
+  // Lazy initializer: pre-llena desde datosPersonales en contexto si viene de /clientes
+  const [campos, setCampos] = useState(() => {
+    if (!datosPersonales) return INITIAL_CAMPOS
+    return {
+      // Sub-paso 1
+      nombres:         datosPersonales.nombres         || '',
+      apellidoPaterno: datosPersonales.apellidoPaterno || '',
+      apellidoMaterno: datosPersonales.apellidoMaterno || '',
+      telefonoCelular: datosPersonales.telefonoCelular || '',
+      // Sub-paso 2
+      fechaNacimiento:     datosPersonales.fechaNacimiento
+                             ? datosPersonales.fechaNacimiento.split('T')[0]
+                             : '',
+      rfc:                 datosPersonales.rfc                  || '',
+      curp:                datosPersonales.curp                 || '',
+      genero:              datosPersonales.genero               || '',
+      estadoCivil:         datosPersonales.estadoCivil          || '',
+      correoElectronico:   datosPersonales.correoElectronico    || '',
+      telefonoAlternativo: datosPersonales.telefonoCasaTrabajo  || '',
+      // Sub-paso 3 — mapeando nombres de campo API → form
+      calle:              datosPersonales.calle               || '',
+      numeroExterior:     datosPersonales.numeroExterior      || '',
+      numeroInterior:     datosPersonales.numeroInterior      || '',
+      colonia:            datosPersonales.colonia             || '',
+      municipio:          datosPersonales.municipioDelegacion || '',
+      estadoMx:           datosPersonales.estadoRepublica     || '',
+      codigoPostal:       datosPersonales.codigoPostal        || '',
+      tipoDomicilioStep5: datosPersonales.tipoDomicilioPaso5  || '',
+      tiempoDomicilio:    datosPersonales.tiempoEnDomicilio   || '',
+    }
+  })
 
   // Errores solo del sub-paso activo
   const [errores, setErrores] = useState({})
@@ -627,6 +657,9 @@ export default function Step5DatosPersonales() {
 
   // Vista de confirmacion final
   const [guardado, setGuardado] = useState(false)
+
+  // Evita doble envio mientras se espera respuesta del servidor (sub-pasos 1 y 3)
+  const [guardando, setGuardando] = useState(false)
 
   // ── Handlers ────────────────────────────────────────────────────────────
 
@@ -644,7 +677,7 @@ export default function Step5DatosPersonales() {
   }, [handleChange])
 
   // Avanzar al siguiente sub-paso (o guardar en sub-paso 3)
-  function handleContinuar() {
+  async function handleContinuar() {
     setIntentoAvanzar(true)
     const nuevosErrores = VALIDADORES[subStep - 1](campos)
 
@@ -662,7 +695,7 @@ export default function Step5DatosPersonales() {
     setIntentoAvanzar(false)
 
     if (subStep === 1) {
-      // Guardado parcial — persiste contacto aunque el usuario abandone
+      // Guardado parcial en contexto — persiste contacto aunque el usuario abandone
       setDatosPersonales({
         nombres: campos.nombres,
         apellidoPaterno: campos.apellidoPaterno,
@@ -670,12 +703,103 @@ export default function Step5DatosPersonales() {
         telefonoCelular: campos.telefonoCelular,
         _parcial: true,
       })
+
+      // POST /api/guardar-contacto — awaited para bloquear avance si el telefono es duplicado
+      setGuardando(true)
+      const baseUrl = import.meta.env.VITE_API_URL || ''
+      try {
+        const res = await fetch(`${baseUrl}/api/guardar-contacto`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sesionId,
+            perfilId,
+            nombres: campos.nombres,
+            apellidoPaterno: campos.apellidoPaterno,
+            apellidoMaterno: campos.apellidoMaterno,
+            telefonoCelular: campos.telefonoCelular,
+          }),
+        })
+
+        if (res.status === 409) {
+          const data = await res.json()
+          if (data.error === 'duplicate_phone') {
+            setErrores({ telefonoCelular: 'Este numero ya esta registrado para otro cliente.' })
+            return // No avanzar
+          }
+        }
+
+        // Cualquier otro error no-409 (5xx, red) se registra pero no bloquea al usuario
+        if (!res.ok && res.status !== 409) {
+          console.error('[Step5] guardar-contacto fallo:', res.status)
+        }
+      } catch (err) {
+        console.error('[Step5] guardar-contacto error de red:', err)
+        // Error de red — avanzar de todas formas para no bloquear el flujo
+      } finally {
+        setGuardando(false)
+      }
+
       setSubStep(2)
     } else if (subStep === 2) {
       setSubStep(3)
     } else {
-      // Sub-paso 3 — guardar objeto completo
+      // Sub-paso 3 — guardar objeto completo en contexto
       setDatosPersonales({ ...campos, _parcial: false })
+
+      if (sesionId) {
+        setGuardando(true)
+        const baseUrl = import.meta.env.VITE_API_URL || ''
+        try {
+          const res = await fetch(`${baseUrl}/api/guardar-perfil/${sesionId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              perfilId,
+              // Sub-paso 2
+              fechaNacimiento: campos.fechaNacimiento,
+              rfc: campos.rfc,
+              curp: campos.curp,
+              genero: campos.genero,
+              estadoCivil: campos.estadoCivil,
+              correoElectronico: campos.correoElectronico,
+              telefonoCasaTrabajo: campos.telefonoAlternativo,
+              // Sub-paso 3 — mapeando nombres de campo del form al contrato de la API
+              calle: campos.calle,
+              numeroExterior: campos.numeroExterior,
+              numeroInterior: campos.numeroInterior,
+              colonia: campos.colonia,
+              municipioDelegacion: campos.municipio,
+              estadoRepublica: campos.estadoMx,
+              codigoPostal: campos.codigoPostal,
+              tipoDomicilioPaso5: campos.tipoDomicilioStep5,
+              tiempoEnDomicilio: campos.tiempoDomicilio,
+            }),
+          })
+
+          if (res.status === 409) {
+            const data = await res.json()
+            if (data.error === 'duplicate_email') {
+              // El campo de correo esta en sub-paso 2 — se usa un error global (banner)
+              setErrores({
+                _global: 'El correo electronico ingresado ya esta registrado para otro cliente. Regresa al paso anterior para corregirlo.',
+              })
+              return // No mostrar pantalla de exito
+            }
+          }
+
+          if (!res.ok && res.status !== 409) {
+            console.error('[Step5] guardar-perfil fallo:', res.status)
+          }
+        } catch (err) {
+          console.error('[Step5] guardar-perfil error de red:', err)
+        } finally {
+          setGuardando(false)
+        }
+      } else {
+        console.error('[Step5] sesionId no disponible al intentar guardar perfil completo')
+      }
+
       setGuardado(true)
     }
   }
@@ -693,6 +817,34 @@ export default function Step5DatosPersonales() {
   // Navega a /clientes para buscar o seleccionar un cliente ya registrado
   function handleIrAClientes() {
     navigate('/clientes')
+  }
+
+  // Guardia: Step5 requiere una sesión activa con perfilId.
+  // Si el usuario llegó aquí sin completar el wizard (pasos 1–4), mostrar aviso.
+  if (!sesionId || !perfilId) {
+    return (
+      <div className="w-full max-w-lg mx-auto">
+        <div className="bg-amber-50 border border-amber-300 rounded-xl px-5 py-6 text-center flex flex-col items-center gap-4">
+          <svg viewBox="0 0 24 24" className="w-10 h-10 text-amber-500" fill="none" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+          </svg>
+          <div>
+            <p className="font-semibold text-amber-800 text-base">Sesión no disponible</p>
+            <p className="text-sm text-amber-700 mt-1 leading-relaxed max-w-xs mx-auto">
+              Para capturar datos del cliente primero debes completar el análisis de perfil (pasos 1 al 4).
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => goToStep(1)}
+            className="mt-1 px-5 py-2.5 rounded-xl bg-amber-600 text-white font-semibold text-sm
+              hover:bg-amber-700 transition min-h-[44px]"
+          >
+            Iniciar nuevo análisis
+          </button>
+        </div>
+      </div>
+    )
   }
 
   // ── Vista de confirmacion exitosa ────────────────────────────────────────
@@ -780,8 +932,16 @@ export default function Step5DatosPersonales() {
           />
         )}
 
+        {/* Banner de error global — para errores de servidor que no corresponden a un campo visible
+            (ej. correo duplicado detectado en sub-paso 3, cuyo campo esta en sub-paso 2) */}
+        {errores._global && (
+          <div className="mt-4 rounded-xl border border-red-300 bg-red-50 px-4 py-3">
+            <p className="text-sm text-red-700">{errores._global}</p>
+          </div>
+        )}
+
         {/* Resumen de errores — visible solo despues del intento de avanzar */}
-        {intentoAvanzar && Object.keys(errores).length > 0 && (
+        {intentoAvanzar && Object.keys(errores).filter((k) => k !== '_global').length > 0 && (
           <div className="mt-5 rounded-xl border border-red-300 bg-red-50 px-4 py-3">
             <p className="text-sm text-red-700 font-semibold">
               Revisa los campos marcados antes de continuar.
@@ -794,10 +954,14 @@ export default function Step5DatosPersonales() {
           <button
             type="button"
             onClick={handleContinuar}
-            className="w-full py-3 px-4 rounded-xl bg-brand-600 text-white font-bold text-base
-              hover:bg-brand-700 active:bg-brand-800 transition shadow-md min-h-[44px]"
+            disabled={guardando}
+            className={[
+              'w-full py-3 px-4 rounded-xl bg-brand-600 text-white font-bold text-base',
+              'hover:bg-brand-700 active:bg-brand-800 transition shadow-md min-h-[44px]',
+              guardando ? 'opacity-60 cursor-not-allowed' : '',
+            ].join(' ')}
           >
-            {estaEnUltimoSubPaso ? 'Guardar datos del cliente' : 'Continuar'}
+            {guardando ? 'Guardando...' : estaEnUltimoSubPaso ? 'Guardar datos del cliente' : 'Continuar'}
           </button>
 
           {/* Boton Atras — visible desde sub-paso 2 en adelante */}
